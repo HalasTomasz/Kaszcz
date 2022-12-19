@@ -48,13 +48,14 @@ E <- Y - a*X - b
 
 \section{Wstęp}
 <!-- Akapit - 6 spacji -->
-|      Celem raportu jest ...
+|      Celem raportu jest zbadanie liniowej korelacji pomiędzy edukacją, a długością życia. Wykorzystane do tego zostaną dane dostępne pod [$\color{blue}{\text{linkiem}}$](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who?fbclid=IwAR2HtwUPyioM4tHmuae7B2owTUB8q3XlmpP12LbTM9NYDsi4qtaWGOYoNDE). Przeprowadzimy dokładną analizę zależności między dwoma zmiennymi oraz zastosujemy odpowiednie metody, by dopasować prostą regresji do danych, po czym zweryfikujemy czy dopasowanie można uznać prawidłowe. Otrzymane wyniki wykorzystane zostaną do przeprowadzenia predykcji długości życia w zależności od czasu edukacji.
 
 
 
 
 
 \section{Opis danych}
+|      Dane, z których będziemy korzystać, opisują wiele cech 183 państw w latach 2000-2015. My jednak skorzystamy wyłącznie z oczekiwanej długości życia i średniego czasu edukacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku zawarta jest pełna informacja o 173 krajach.
 
 ```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
 ggplot() + 
@@ -62,6 +63,8 @@ ggplot() +
   xlab("Czas nauki") +
   ylab("Długość życia")
 ```
+
+Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma zmiennymi. W dalszej części poddamy ją głębszej analizie.
 
 
 
@@ -75,7 +78,7 @@ ggplot() +
 
 
 \section{Regresja}
-|      Jako pierwszy przeanalizujemy wpływ czasu edukacji na oczekiwaną długość życia. W tym przypadku rozważymy dane wyłącznie z 2015 roku, czyli te najbardziej aktualne. Na wykresie \ref{fig:regresja} można zauważyć liniową zależność danych, zatem do zbadania korelacji możemy użyć współczynnika Pearsona. Przyjmuje on wartość $R \approx 0,752$, więc jest to dość mocna korelacja. Dopasujemy teraz do danych prostą regresji korzystając z metody najmniejszych kwadratów. Przyjmijmy model
+|      Dopasujemy teraz do danych prostą regresji korzystając z metody najmniejszych kwadratów. Przyjmijmy model
 $$ Y_i = ax_i + b + \epsilon_i, $$
 gdzie $x_i$ to dane dotyczące czasu nauczania, a $\epsilon_i$ są i.i.d. ze średnią równą 0 i skończoną wariancją. Oznaczmy dane z czasem życia jako $y_i$. Wspomniana metoda polega na znalezieniu takich współczynników $a, b$ dla których funkcja
 $$S(a,b) = \sum_{i = 1}^n (y_i - ax_i - b)^2$$
@@ -88,7 +91,7 @@ $$
 $$
 gdzie $R$ jest współczynnikiem korelacji Pearsona, a $S_x, S_y$ są próbkowymi odchyleniami standardowymi.
 
-```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczona dla danych.", fig.align="center", fig.width = 4, fig.height = 3}
+```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczona dla danych.", fig.align="center", fig.width = 6, fig.height = 3}
 ggplot() + 
   geom_point(aes(X, Y, col='a')) + 
   geom_line(aes(X, a*X + b, col='b'), linewidth=1) + 
@@ -104,7 +107,7 @@ ggplot() +
 
 \section{Analiza residuów}
 
-Kolejnym punktem będzie analiza residuów (błędów)
+|      Kolejnym punktem będzie analiza residuów (błędów)
 $$e_i = y_i - \hat{y}_i\;,$$
 gdzie $\hat{y}_i = \hat{a}x_i + \hat{b}$. W celu zbadania rozkładu residuów, spójrzmy na ich histogram
 
