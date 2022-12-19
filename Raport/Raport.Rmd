@@ -24,30 +24,23 @@ library(knitr)
 library(reshape2)
 library(cowplot)
 
-data <- read.csv("data/data.csv")
-data2015 <- data %>% filter(year == 2015)
-
-
-regression <- function(X, Y, xlabel="", ylabel="", display_plot=TRUE){
+regression <- function(X, Y){
     r <- cor(X, Y, use="pairwise.complete.obs")
     Sx <- sd(X)
     Sy <- sd(Y)
     a <- r * Sy / Sx
     b <- mean(Y) - a * mean(X)
-
-    if(display_plot){
-        xs <- seq(min(X), max(X), 0.01)
-        plt <- ggplot() +
-            geom_point(aes(x=X, y=Y), alpha=0.5) +
-            geom_line(aes(x = xs, y = a * xs + b), linewidth=1, col="red") +
-            xlab(xlabel) + 
-            ylab(ylabel)
-        show(plt)
-    }
-    else{
-      return(c(a, b))
-    }
+    return(c(a, b))
 }
+
+data <- read.csv('data/data.csv')
+data2015 <- data %>% filter(year == 2015)
+data_filtered <- data2015 %>% filter(!is.na(schooling) & !is.na(life_expectancy))
+
+X <- data_filtered$schooling
+Y <- data_filtered$life_expectancy
+c(a, b) %<-% regression(X, Y)
+E <- Y - a*X - b
 ```
 
 
@@ -59,12 +52,30 @@ regression <- function(X, Y, xlabel="", ylabel="", display_plot=TRUE){
 
 
 
+
+
 \section{Opis danych}
+
+```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
+ggplot() + 
+  geom_point(aes(X, Y), alpha=0.6, size=2.2) + 
+  xlab("Czas nauki") +
+  ylab("Długość życia")
+```
+
+
+
+
+
+\section{Statystyki}
+
+
+
 
 
 
 \section{Regresja}
-|      Jako pierwszy przeanalizujemy wpływ czasu edukacji na oczekiwaną długość życia. W tym przypadku rozważymy dane wyłącznie z 2015 roku, czyli te najbardziej aktualne. Na wykresie \ref{fig:scatter_schooling} można zauważyć liniową zależność danych, zatem do zbadania korelacji możemy użyć współczynnika Pearsona. Przyjmuje on wartość $R \approx 0,752$, więc jest to dość mocna korelacja. Dopasujemy teraz do danych prostą regresji korzystając z metody najmniejszych kwadratów. Przyjmijmy model
+|      Jako pierwszy przeanalizujemy wpływ czasu edukacji na oczekiwaną długość życia. W tym przypadku rozważymy dane wyłącznie z 2015 roku, czyli te najbardziej aktualne. Na wykresie \ref{fig:regresja} można zauważyć liniową zależność danych, zatem do zbadania korelacji możemy użyć współczynnika Pearsona. Przyjmuje on wartość $R \approx 0,752$, więc jest to dość mocna korelacja. Dopasujemy teraz do danych prostą regresji korzystając z metody najmniejszych kwadratów. Przyjmijmy model
 $$ Y_i = ax_i + b + \epsilon_i, $$
 gdzie $x_i$ to dane dotyczące czasu nauczania, a $\epsilon_i$ są i.i.d. ze średnią równą 0 i skończoną wariancją. Oznaczmy dane z czasem życia jako $y_i$. Wspomniana metoda polega na znalezieniu takich współczynników $a, b$ dla których funkcja
 $$S(a,b) = \sum_{i = 1}^n (y_i - ax_i - b)^2$$
@@ -77,26 +88,90 @@ $$
 $$
 gdzie $R$ jest współczynnikiem korelacji Pearsona, a $S_x, S_y$ są próbkowymi odchyleniami standardowymi.
 
-```{r scatter_schooling, fig.cap="\\label{fig:scatter_schooling} Prosta regresji wyznaczona dla danych.", fig.align="center", fig.width = 4, fig.height = 3}
-
-df <- data[(!is.na(data$schooling)) & (!is.na(data$life_expectancy)) & (data$year == 2015),]
-regression(df$schooling, df$life_expectancy, "Lata nauki", "Długość życia")
+```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczona dla danych.", fig.align="center", fig.width = 4, fig.height = 3}
+ggplot() + 
+  geom_point(aes(X, Y, col='a')) + 
+  geom_line(aes(X, a*X + b, col='b'), linewidth=1) + 
+  scale_color_manual(labels=c("Dane", "Prosta regresji"), values=c('#008cff', "#da350b")) +
+  labs(col="") +
+  xlab("Czas nauki") +
+  ylab("Długość życia")
 ```
 
+
+
+
+
+\section{Analiza residuów}
 
 Kolejnym punktem będzie analiza residuów (błędów)
 $$e_i = y_i - \hat{y}_i\;,$$
 gdzie $\hat{y}_i = \hat{a}x_i + \hat{b}$. W celu zbadania rozkładu residuów, spójrzmy na ich histogram
 
-```{r hist_schooling, fig.cap="\\label{fig:hist_schooling} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
-ab <- regression(df$schooling, df$life_expectancy, display_plot = FALSE)
-a <- ab[1]
-b <- ab[2]
-e <- df$life_expectancy - a*df$schooling - b
-ggplot(data.frame(e = e), aes(e)) + 
-  geom_histogram(aes(y = after_stat(density)), fill = 'white', color = 'black') + 
+```{r res_scatter, fig.cap="\\label{fig:res_scatter} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
+df <- data.frame(X=X, Y=Y, E=E)
+df <- df %>% arrange(X)
+ggplot() + 
+  geom_point(aes(1:length(E), df$E)) + 
+  geom_line(aes(1:length(E), 0), linewidth=1) +
+  labs(col="") +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank()) +
+  ylab("Wartość błędu")
+```
+
+```{r res_histogram, fig.cap="\\label{fig:res_histogram} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
+ggplot() + geom_histogram(aes(x=E, y=..density..), bins=13)
+```
+
+```{r res_gestosc, fig.cap="\\label{fig:res_gestosc} Porównanie histogramu z danych z gęstością teoretyczną rozkładu $N(0, s)$.", fig.align="center", fig.width = 6, fig.height = 3}
+xs <- seq(min(E), max(E) + 3, 0.01)
+ggplot() + 
+  geom_histogram(aes(x=E, y=..density.., fill='a'), bins=13) + 
+  geom_line(aes(xs, dnorm(xs, 0, sd(E)), col='b'), linewidth=1.5) + 
+  scale_color_manual(labels=c("gęstość teoret."), values=c('#f13b3b')) +
+  scale_fill_manual(labels=c("histogram"), values=c('#586974')) +
+  labs(col="", fill="") +
   xlab("Wartość błędu") +
-  theme(axis.title.y = element_blank())
+  ylab("Gęstość")
+```
+
+```{r res_dystrybuanta, fig.cap="\\label{fig:res_dystrybuanta} Porównanie dystrybuanty empirycznej z danych z dystrybuantą teoretyczną rozkładu $N(0, s)$.", fig.align="center", fig.width = 6, fig.height = 3}
+F <- ecdf(E)
+xs <- seq(min(E), max(E), 0.01)
+ggplot() + 
+  geom_line(aes(x=xs, y=F(xs), col='a'), linewidth=1) + 
+  geom_line(aes(x=xs, y=pnorm(xs, 0, sd(E)), col='b'), linewidth=1) +
+  scale_color_manual(labels=c("Dystrybuanta empir.", "Dystrybuanta teoret."), values=c('#00b3ff', "#d36f12")) +
+  labs(col="") +
+  xlab("Wartość błędu") +
+  ylab("Dystrybuanta")
+```
+
+```{r res_korelacja, fig.cap="\\label{fig:res_korelacja} Wykres punktowy empirycznej autokorelacji w zależności od przesunięcia $h$.", fig.align="center", fig.width = 4, fig.height = 3}
+n <- length(E)
+hs <- 0:70
+Xt <- rnorm(n, 0, sd(E))
+
+g_ <- function(X, h) {
+    return ( mean( (X[(1+h):n] - mean(X)) * (X[1:(n-h)] - mean(X)) ) )
+}
+
+g_s <- c()
+g_s2 <- c()
+for (h in hs) {
+    g_s <- append(g_s, g_(E, h))
+    g_s2 <- append(g_s2, g_(Xt, h))
+}
+
+r_s = g_s / g_(E, 0)
+r_s2 = g_s2 / g_(Xt, 0)
+
+ggplot() + 
+  geom_point(aes(hs, r_s), size=2.2) +
+  #scale_color_manual(labels=c("", ""), values=c('#00b3ff', "#d36f12")) +
+  labs(col="") +
+  xlab("h") +
+  ylab("autokorelacja")
 ```
 
 Kształt histogramu jest zbliżony do krzywej gaussowskiej. Średnia wartość residuów wynosi $\mu_e = 0$, a ich wariancja $\sigma_e^2 = 20,81$. Posłużymy się testem Kołmogorowa-Smirnova w celu zbadania normalności rozkładu błędów. Przedstawmy hipotezy:
@@ -106,10 +181,6 @@ Kształt histogramu jest zbliżony do krzywej gaussowskiej. Średnia wartość r
 \item $\mathcal{H}_1$: wartości residuów nie są z rozkładu normalnego $\mathcal{N}(0, 20.81)$
 \end{itemize}
 
-```{r, echo = FALSE, eval = FALSE}
-ks.test(e, 'pnorm', 0, sd(e))
-```
-
 Wyznaczona p-wartość wynosi $p = 0,2532$. Ponieważ otrzymany wynik jest wystarczająco duży, to nie mamy podstaw do odrzucenia hipotezy zerowej i możemy przyjąć, że dane pochodzą z rozkładu normalnego $\mathcal{N}(0, 20.81)$. 
 
 |      Analiza residuów jest niezwykle istotna, kiedy decydujemy się robić predykcję danych. Znając rozkład błędów, możemy wyznaczyć przedziały ufności o danym poziomie istotności dla przewidywanych wyników. Innymi słowy możemy wyznaczyć prawdopodobieństwo z jakim predykowana wartość zmieści się w konkretnym przedziale. Wyniki, które otrzymaliśmy mogą być podstawą do wykonania takiej predykcji, jednak wcześniej należałoby jeszcze sprawdzić, czy residua są od siebie niezależne oraz czy ich wariancja jest stała.
@@ -118,56 +189,11 @@ Wyznaczona p-wartość wynosi $p = 0,2532$. Ponieważ otrzymany wynik jest wysta
 
 
 
-\section{Analiza residuów}
+\section{Przedziały ufności}
 
 
 
 
 
+\section{Predykcja}
 
-# 7. PKB państwa, a długość życia
-
-|      Podobnie jak w przypadku długości edukacji, będziemy analizować dane dotyczące PKB wyłącznie z 2015 roku. W przeciwieństwie do poprzedniego przypadku, dane te nie są zależne liniowo. Ich wykres punktowy kształtem przypomina bardziej zależność logarytmiczną. Sprawdźmy zatem, czy w rzeczywistości tak jest nakładając logarytm na wartości PKB.
-
-```{r scatter_gdp_line, fig.cap="\\label{fig:scatter_gdp_line} Wykresy punktowe z surowych danych po lewej i z przetransformowanych po prawej.", fig.align="center", fig.width = 6, fig.height = 2}
-df2 <- data[(!is.na(data$GDP)) & (!is.na(data$life_expectancy)) & (data$year == 2015),]
-scat2 <- ggplot(data = df2, mapping = aes(x = GDP, y = life_expectancy)) + geom_point(alpha=0.5) + 
-  xlab("PKB") +
-  ylab("Długość życia")
-scat2_mod <- ggplot(data = df2, mapping = aes(x = log(GDP), y = life_expectancy)) + geom_point(alpha=0.5) +
-  xlab("log(PKB)") +
-  theme(axis.title.y = element_blank())
-plot_grid(scat2, scat2_mod)
-```
-
-Możemy zauważyć, że dane po transformacji przypominają bardziej zależne liniowo, choć są dość mocno rozrzucone. Współczynnik korelacji Pearsona dla przetransformowanych danych wynosi 0.52. Przyjmnijmy model
-$$ Y_i = a\log(x_i) + b + \epsilon_i, $$
-gdzie $x_i$ są danymi z PKB, a $\epsilon_i$ są i.i.d. o średniej równej 0 i skończonej wariancji. Aby jednak otrzymać model lioniowy jak w punkcie 6, podstawiamy $z_i = \log(x_i)$ i otrzymujemy
-$$ Y_i = az_i + b + \epsilon_i. $$
-Teraz już możemy skorzystać z metody najmniejszych kwadratów, aby dopasować prostą regresji. W ten sposób otrzymujemy estymatory postaci
-$$
-    \begin{cases}
-      \hat{a} = \frac{\sum_{i = 1}^n(z_i - \bar{z})(y_i - \bar{y})}{\sum_{i = 1}^n(z_i - \bar{z})^2} \\
-      \hat{b} = \bar{y} - a\bar{z}
-    \end{cases}
-$$
-
-```{r reg_gdp_final, fig.cap="\\label{fig:reg_gdp_final} Po lewej prosta regresji dla przetransformowanych danych. Po prawej krzywa regresji dopasowana do oryginalnych danych.", fig.align="center", fig.width =6, fig.height = 2}
-c(a1, b1) %<-% regression(log(df2$GDP), df2$life_expectancy, display_plot=FALSE)
-xs1 <- seq(min(log(df2$GDP)), max(log(df2$GDP)), 0.1)
-reg2 <- ggplot() + geom_point(aes(log(df2$GDP), df2$life_expectancy), alpha = 0.5) + 
-  geom_line(aes(xs1, a1*xs1 + b1), col='red', linewidth=1) +
-  xlab("log(PKB)") +
-  ylab("Długość życia")
-
-c(a2, b2) %<-% regression(log(df2$GDP), df2$life_expectancy, display_plot=FALSE)
-xs2 <- seq(0.1, max(df2$GDP), 10)
-reg2_final <- ggplot() + geom_point(aes(df2$GDP, df2$life_expectancy), alpha = 0.5) + 
-  geom_line(aes(xs2, a2*log(xs2) + b2), col='red', linewidth=1) +
-  xlab("PKB") +
-  theme(axis.title.y = element_blank())
-
-plot_grid(reg2, reg2_final)
-```
-
-Jak możemy zobaczyć, krzywa logarytmiczna w miarę pokrywa się z danymi, więc można przyjać ją za przybliżenie zależności pomiędzy dwoma zmiennymi. Ważną obserwacją jest to, że największy wzrost mamy dla bardzo małych wartości PKB - im jest większe, tym wolniej rośnie długość życia. Oznacza to, że dla państw z małym PKB, nawet niewielki jego wzrost może przyczynić się do znacznego zwiększenia długości życia, zaś dla państw lepiej rozwinietych, wzrost PKB ma już na to nieznaczny wpływ.
