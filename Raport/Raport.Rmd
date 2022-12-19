@@ -23,6 +23,7 @@ library(tidyr)
 library(knitr)
 library(reshape2)
 library(cowplot)
+library(latex2exp)
 
 regression <- function(X, Y){
     r <- cor(X, Y, use="pairwise.complete.obs")
@@ -58,8 +59,8 @@ E <- Y - a*X - b
 |      Dane, z których będziemy korzystać, opisują wiele cech 183 państw w latach 2000-2015. My jednak skorzystamy wyłącznie z oczekiwanej długości życia i średniego czasu edukacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku zawarta jest pełna informacja o 173 krajach.
 
 ```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
-ggplot() + 
-  geom_point(aes(X, Y), alpha=0.6, size=2.2) + 
+ggplot() +
+  geom_point(aes(X, Y), alpha=0.6, size=2.2) +
   xlab("Czas nauki") +
   ylab("Długość życia")
 ```
@@ -78,18 +79,26 @@ Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma z
 
 
 \section{Regresja}
-|      Dopasujemy teraz do danych prostą regresji korzystając z metody najmniejszych kwadratów. Przyjmijmy model
-$$ Y_i = ax_i + b + \epsilon_i, $$
-gdzie $x_i$ to dane dotyczące czasu nauczania, a $\epsilon_i$ są i.i.d. ze średnią równą 0 i skończoną wariancją. Oznaczmy dane z czasem życia jako $y_i$. Wspomniana metoda polega na znalezieniu takich współczynników $a, b$ dla których funkcja
-$$S(a,b) = \sum_{i = 1}^n (y_i - ax_i - b)^2$$
+|      Aby dopasować do danych prostą regresji, skorzystamy z metody najmniejszych kwadratów. Oznaczmy licznę danych (państw) jako $n = 173$. Przyjmijmy model
+$$ Y_i = \beta_1 x_i + \beta_0 + \epsilon_i, \ \ \ i = 1, 2, \dots, n $$
+gdzie $x_i$ to dane dotyczące czasu nauczania, a $\epsilon_i$ są niezależnymi zmiennymi losowymi ze średnią równą 0 i skończoną wariancją. Oznaczmy dane z czasem życia jako $y_i$ - będziemy traktować je jako realizacje zmiennych losowych $Y_i$. Wspomniana metoda polega na znalezieniu takich współczynników $\beta_1, \beta_0$, dla których funkcja
+$$ S(\beta_1, \beta_0) = \sum_{i = 1}^n (y_i - \beta_1 x_i - \beta_0)^2 $$
 przyjmuje wartość najmniejszą. Rozwiązaniem jest para estymatorów
 $$
     \begin{cases}
-      \hat{a} = R\frac{S_y}{S_x} = \frac{\sum_{i = 1}^n(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n(x_i - \bar{x})^2}\\
-      \hat{b} = \bar{y} - a\bar{x}
+      \hat{\beta_1} = R \dfrac{S_y}{S_x} = \dfrac{\sum\limits_{i = 1}^n(x_i - \bar{x})(y_i - \bar{y})}{\sum\limits_{i = 1}^n(x_i - \bar{x})^2}\\
+      \hat{\beta_0} = \bar{y} - \hat{\beta_1} \bar{x}
     \end{cases}
 $$
-gdzie $R$ jest współczynnikiem korelacji Pearsona, a $S_x, S_y$ są próbkowymi odchyleniami standardowymi.
+gdzie $R$ jest współczynnikiem korelacji Pearsona, a $S_x, S_y$ są próbkowymi odchyleniami standardowymi. Można pokazać, że estymatory te są nieobciążone. Po podstawieniu danych otrzymujemy
+$$
+    \begin{cases}
+      \hat{\beta_1} \approx 2.23 \\
+      \hat{\beta_0} \approx 42.9
+    \end{cases}.
+$$
+Wyestymowane wartości $Y_i$ będą miały postać
+$$ \hat{y_i} = \hat{\beta_1} x_i + \hat{\beta_0}. $$
 
 ```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczona dla danych.", fig.align="center", fig.width = 6, fig.height = 3}
 ggplot() + 
@@ -101,32 +110,99 @@ ggplot() +
   ylab("Długość życia")
 ```
 
+Jak możemy zauważyć wyznaczona prosta pokrywa się z danymi.
+
 
 
 
 
 \section{Analiza residuów}
 
-|      Kolejnym punktem będzie analiza residuów (błędów)
-$$e_i = y_i - \hat{y}_i\;,$$
-gdzie $\hat{y}_i = \hat{a}x_i + \hat{b}$. W celu zbadania rozkładu residuów, spójrzmy na ich histogram
+|      Aby sprawdzić, czy dane spełniają założenia modelu tj.
+\begin{enumerate}
+  \item $ \mathrm{E} \epsilon_i = 0 $,
+  \item $ \mathrm{Var}(\epsilon_i) < \infty $,
+  \item $ \epsilon_i $ są niezależne,
+\end{enumerate}
+przeprowadzimy analizę residuów (błędów)
+$$e_i = y_i - \hat{y_i},$$
+czyli realizacji zmiennych $\epsilon_i$. Ponieważ estymatory $\hat{\beta_1}, \hat{\beta_0}$ zostały wyznaczone metodą najmniejszych kwadratów, to pierwsze założenie na pewno jest spełnione. Dodatkowo, jeśli spojrzymy na wykres \ref{fig:res_scatter}, residua wydają się być rozłożone losowo wokół zera.
 
-```{r res_scatter, fig.cap="\\label{fig:res_scatter} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
+```{r res_scatter, fig.cap="\\label{fig:res_scatter} Wykres punktowy residuów.", fig.align="center", fig.width = 4, fig.height = 3}
 df <- data.frame(X=X, Y=Y, E=E)
 df <- df %>% arrange(X)
 ggplot() + 
   geom_point(aes(1:length(E), df$E)) + 
   geom_line(aes(1:length(E), 0), linewidth=1) +
   labs(col="") +
-  theme(axis.title.x=element_blank(), axis.text.x=element_blank()) +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
   ylab("Wartość błędu")
 ```
 
-```{r res_histogram, fig.cap="\\label{fig:res_histogram} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
-ggplot() + geom_histogram(aes(x=E, y=..density..), bins=13)
+|      W przypadku założenia drugiego najpierw obliczymy wariancję residuów korzystając z nieobciążonego estymatora postaci
+$$ S = \frac{1}{n - 2} \sum_{i=1}^n e_i^2. $$
+Dla naszych danych otrzymaliśmy $S \approx 20.93$. Następnie policzymy wariancje częściowe tj.
+$$ S_k = \frac{1}{k - 2} \sum_{i=1}^k e_i^2, \ \ \ k = 3, \dots, n. $$
+
+```{r res_wariancja, fig.cap="\\label{fig:res_wariancja} Porównanie wariancji częściowej $S_k$ residuów dla $k = 2,... , n$ z wariancją z całej próby, czyli $S$.", fig.align="center", fig.width = 6, fig.height = 3}
+n <- length(E)
+varE <- c()
+for (i in 3:n) {
+    varE <- append(varE, sum(E[1:i]^2) / (i - 2))
+}
+ggplot() + 
+  geom_line(aes(3:n, varE, col='a')) + 
+  geom_line(aes(3:n, sum(E^2) / (n - 2), col='b')) +
+  scale_color_manual(labels=c(TeX("$S_k$"), TeX("$S$")), values=c('#00b3ff', "#d36f12")) +
+  labs(col="") +
+  xlab(TeX("$k$")) +
+  ylab("Wariancja")
 ```
 
-```{r res_gestosc, fig.cap="\\label{fig:res_gestosc} Porównanie histogramu z danych z gęstością teoretyczną rozkładu $N(0, s)$.", fig.align="center", fig.width = 6, fig.height = 3}
+Na powyższym wykresie zobaczyć możemy, że wariancja częściowa wraz ze zwiększającym się $k$ szybko zbiega do wartości wariancji z całej próbki i oscyluje wokół niej. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona.
+
+|      Aby zweryfikować, czy spełnione jest założenie trzecie, skorzystamy z funkcji empirycznej autokorelacji o postaci
+$$ \hat{\rho}(h) = \dfrac{\hat{\gamma}(h)}{\hat{\gamma}(0)}, $$
+gdzie
+$$ \hat{\gamma}(h) = \frac{1}{n} \sum_{i=1}^{n - |h|} (e_{i + |h|} - \bar{e}) (e_i - \bar{e}) $$
+jest estymatorem funkcji autokowariancji.
+
+```{r res_korelacja, fig.cap="\\label{fig:res_korelacja} Wykres punktowy empirycznej autokorelacji w zależności od przesunięcia $h$.", fig.align="center", fig.width = 4, fig.height = 3}
+n <- length(E)
+hs <- 0:50
+Xt <- rnorm(n, 0, sd(E))
+
+g_ <- function(X, h) {
+    return ( mean( (X[(1+h):n] - mean(X)) * (X[1:(n-h)] - mean(X)) ) )
+}
+
+g_s <- c()
+g_s2 <- c()
+for (h in hs) {
+    g_s <- append(g_s, g_(E, h))
+    g_s2 <- append(g_s2, g_(Xt, h))
+}
+
+r_s = g_s / g_(E, 0)
+r_s2 = g_s2 / g_(Xt, 0)
+
+ggplot() + 
+  geom_point(aes(hs, r_s), size=2.2) +
+  labs(col="") +
+  xlab(TeX("$h$")) +
+  ylab(TeX('$\\hat{\\rho}(h)$'))
+```
+
+Na wykresie \ref{fig:res_korelacja} widać, że dla $h \neq 0$ funkcja $\hat{\rho}(h)$ oscyluje wokół zera, zatem wnioskujemy, że residua są od siebie niezależne.
+
+```{r res_histogram, fig.cap="\\label{fig:res_histogram} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
+ggplot() + 
+  geom_histogram(aes(x=E, y=..density..), bins=13) +
+  xlab(TeX("$e_i$")) +
+  ylab(TeX("gęstość"))
+```
+
+```{r res_gestosc, fig.cap="\\label{fig:res_gestosc} Porównanie histogramu z danych z gęstością teoretyczną rozkładu $\\mathcal{N}(0, s)$.", fig.align="center", fig.width = 6, fig.height = 3}
 xs <- seq(min(E), max(E) + 3, 0.01)
 ggplot() + 
   geom_histogram(aes(x=E, y=..density.., fill='a'), bins=13) + 
@@ -148,33 +224,6 @@ ggplot() +
   labs(col="") +
   xlab("Wartość błędu") +
   ylab("Dystrybuanta")
-```
-
-```{r res_korelacja, fig.cap="\\label{fig:res_korelacja} Wykres punktowy empirycznej autokorelacji w zależności od przesunięcia $h$.", fig.align="center", fig.width = 4, fig.height = 3}
-n <- length(E)
-hs <- 0:70
-Xt <- rnorm(n, 0, sd(E))
-
-g_ <- function(X, h) {
-    return ( mean( (X[(1+h):n] - mean(X)) * (X[1:(n-h)] - mean(X)) ) )
-}
-
-g_s <- c()
-g_s2 <- c()
-for (h in hs) {
-    g_s <- append(g_s, g_(E, h))
-    g_s2 <- append(g_s2, g_(Xt, h))
-}
-
-r_s = g_s / g_(E, 0)
-r_s2 = g_s2 / g_(Xt, 0)
-
-ggplot() + 
-  geom_point(aes(hs, r_s), size=2.2) +
-  #scale_color_manual(labels=c("", ""), values=c('#00b3ff', "#d36f12")) +
-  labs(col="") +
-  xlab("h") +
-  ylab("autokorelacja")
 ```
 
 Kształt histogramu jest zbliżony do krzywej gaussowskiej. Średnia wartość residuów wynosi $\mu_e = 0$, a ich wariancja $\sigma_e^2 = 20,81$. Posłużymy się testem Kołmogorowa-Smirnova w celu zbadania normalności rozkładu błędów. Przedstawmy hipotezy:
