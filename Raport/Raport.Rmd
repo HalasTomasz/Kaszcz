@@ -25,7 +25,6 @@ library(reshape2)
 library(cowplot)
 
 data <- read.csv("data/data.csv")
-data2014 <- data %>% filter(year == 2014)
 data2015 <- data %>% filter(year == 2015)
 
 
