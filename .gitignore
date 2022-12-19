@@ -1,1 +1,5 @@
 .vscode
+*.aux
+*.out
+*.pdf
+*.log

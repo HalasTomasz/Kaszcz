@@ -1,0 +1,241 @@
+---
+title: "Co wpływa na długość naszego życia?"
+author: "Szymon Malec, Michał Wiktorowski"
+output:
+  pdf_document: 
+    extra_dependencies: ["polski", "mathtools", "amsthm", "amssymb", "icomma", "upgreek", "xfrac", "scrextend", "float", "tabularx", "hyperref", "caption", "enumitem"]
+fontsize: 12pt
+---
+
+\renewcommand{\figurename}{Wykres}
+\renewcommand{\tablename}{Tablica}
+\raggedbottom
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE, fig.pos = "H")
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(zeallot)
+library(tidyr)
+library(knitr)
+library(reshape2)
+library(cowplot)
+
+data <- read.csv("data/data.csv")
+data2014 <- data %>% filter(year == 2014)
+data2015 <- data %>% filter(year == 2015)
+
+
+regression <- function(X, Y, xlabel="", ylabel="", display_plot=TRUE){
+    r <- cor(X, Y, use="pairwise.complete.obs")
+    Sx <- sd(X)
+    Sy <- sd(Y)
+    a <- r * Sy / Sx
+    b <- mean(Y) - a * mean(X)
+
+    if(display_plot){
+        xs <- seq(min(X), max(X), 0.01)
+        plt <- ggplot() +
+            geom_point(aes(x=X, y=Y), alpha=0.5) +
+            geom_line(aes(x = xs, y = a * xs + b), linewidth=1, col="red") +
+            xlab(xlabel) + 
+            ylab(ylabel)
+        show(plt)
+    }
+    else{
+      return(c(a, b))
+    }
+}
+```
+
+
+
+
+# 1. Wstęp
+<!-- Akapit - 6 spacji -->
+
+
+
+
+
+
+# 5. Analiza zależności
+|      Jednym z głównych celów raportu jest sprawdzenie, które czynniki mają największy wpływ na długość życia. Dobrym początkiem będzie narysowanie wykresów punktowych długości życia od poszczególnych zmiennych. Wykresy takie dają wgląd na to, jak zachowują się dane oraz pozwalają ocenić, czy występuje między nimi jakaś zależność. Dodatkowo skorzystamy ze współczynnika korelacji Spearmana, ponieważ jest to miara monotonicznej zależności, a właśnie takiej zależności szukamy. Wspomnianą korelację obliczymy między długością życia, a pozostałymi zmiennymi liczbowymi dla każdego roku z osobna.
+
+```{r scattery_le, fig.cap="\\label{fig:scattery_le} Wykresy punktowe oczekiwanej długości życia od poszczególnych zmiennych.", fig.align="center", fig.width = 5, fig.height = 8}
+data[4:22] %>%
+  gather(-life_expectancy, key = "var", value = "value") %>% 
+  ggplot(aes(x = value, y = life_expectancy)) +
+    geom_point(size=0.4, alpha=0.4, col='#0575d0', stroke=0) +
+    facet_wrap(~ var, scales='free', nrow=6) +
+    theme(axis.title.x=element_blank()) +
+    scale_x_discrete() +
+    scale_y_discrete() + theme(
+    plot.title = element_text(hjust = 0.5, size = 24),
+    )
+```
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+        \textbf{year} & \textbf{2000} & \textbf{2001} & \textbf{2002} & \textbf{2003} & \textbf{2004} & \textbf{2005} & \textbf{2006} & \textbf{2007} \\ \hline
+        \textbf{adult mortality} & -0.56 & -0.57 & -0.58 & -0.54 & -0.74 & -0.54 & -0.59 & -0.61 \\ \hline
+        \textbf{infant deaths} & -0.58 & -0.61 & -0.62 & -0.61 & -0.62 & -0.61 & -0.62 & -0.61 \\ \hline
+        \textbf{alcohol} & 0.43 & 0.41 & 0.44 & 0.43 & 0.44 & 0.44 & 0.46 & 0.45 \\ \hline
+        \textbf{percentage expenditure} & 0.52 & 0.49 & 0.53 & 0.54 & 0.51 & 0.54 & 0.53 & 0.49 \\ \hline
+        \textbf{hepatitis B} & 0.14 & 0.18 & 0.3 & 0.35 & 0.32 & 0.34 & 0.33 & 0.36 \\ \hline
+        \textbf{measles} & -0.45 & -0.46 & -0.45 & -0.39 & -0.26 & -0.2 & -0.27 & -0.22 \\ \hline
+        \textbf{BMI} & 0.6 & 0.64 & 0.65 & 0.6 & 0.56 & 0.48 & 0.61 & 0.62 \\ \hline
+        \textbf{under five deaths} & -0.61 & -0.63 & -0.63 & -0.63 & -0.63 & -0.62 & -0.63 & -0.63 \\ \hline
+        \textbf{polio} & 0.58 & 0.57 & 0.57 & 0.59 & 0.49 & 0.49 & 0.51 & 0.5 \\ \hline
+        \textbf{total expenditure} & 0.3 & 0.28 & 0.26 & 0.25 & 0.25 & 0.26 & 0.31 & 0.3 \\ \hline
+        \textbf{diphtheria} & 0.52 & 0.6 & 0.58 & 0.59 & 0.56 & 0.52 & 0.52 & 0.54 \\ \hline
+        \textbf{HIV AIDS} & -0.72 & -0.73 & -0.71 & -0.74 & -0.76 & -0.76 & -0.76 & -0.77 \\ \hline
+        \textbf{GDP} & 0.65 & 0.66 & 0.7 & 0.68 & 0.65 & 0.68 & 0.63 & 0.59 \\ \hline
+        \textbf{population} & -0.14 & -0.32 & -0.13 & -0.17 & -0.07 & -0.02 & -0.17 & -0.14 \\ \hline
+        \textbf{thinness 1-19 years} & -0.54 & -0.5 & -0.58 & -0.56 & -0.59 & -0.6 & -0.65 & -0.67 \\ \hline
+        \textbf{thinness 5-9 years} & -0.54 & -0.5 & -0.55 & -0.57 & -0.6 & -0.67 & -0.7 & -0.67 \\ \hline
+        \textbf{HDI} & 0.72 & 0.78 & 0.77 & 0.79 & 0.8 & 0.82 & 0.89 & 0.89 \\ \hline
+        \textbf{schooling} & 0.77 & 0.76 & 0.76 & 0.77 & 0.78 & 0.78 & 0.82 & 0.81 \\ \hline
+    \end{tabular}
+    \caption{Tabela korelacji Spearmana między oczekiwaną długością życia, a poszczególnymi zmiennymi dla lat 2000-2007.}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+        \textbf{year} & \textbf{2008} & \textbf{2009} & \textbf{2010} & \textbf{2011} & \textbf{2012} & \textbf{2013} & \textbf{2014} & \textbf{2015} \\ \hline
+        \textbf{adult mortality} & -0.78 & -0.71 & -0.71 & -0.72 & -0.67 & -0.69 & -0.73 & -0.74 \\ \hline
+        \textbf{infant deaths} & -0.61 & -0.6 & -0.59 & -0.6 & -0.59 & -0.58 & -0.58 & -0.58 \\ \hline
+        \textbf{alcohol} & 0.45 & 0.43 & 0.44 & 0.44 & 0.57 & 0.56 & 0.59 & 0.2 \\ \hline
+        \textbf{percentage expenditure} & 0.46 & 0.51 & 0.49 & 0.46 & 0.51 & 0.45 & 0.42 & 0 \\ \hline
+        \textbf{hepatitis B} & 0.39 & 0.36 & 0.38 & 0.33 & 0.33 & 0.39 & 0.42 & 0.47 \\ \hline
+        \textbf{measles} & -0.14 & -0.21 & -0.26 & -0.15 & -0.2 & -0.2 & -0.21 & -0.23 \\ \hline
+        \textbf{BMI} & 0.6 & 0.61 & 0.55 & 0.55 & 0.55 & 0.53 & 0.51 & 0.55 \\ \hline
+        \textbf{under five deaths} & -0.62 & -0.63 & -0.62 & -0.63 & -0.62 & -0.6 & -0.6 & -0.6 \\ \hline
+        \textbf{polio} & 0.53 & 0.43 & 0.52 & 0.5 & 0.52 & 0.54 & 0.53 & 0.56 \\ \hline
+        \textbf{total expenditure} & 0.19 & 0.31 & 0.34 & 0.17 & 0.3 & 0.36 & 0.37 & -1 \\ \hline
+        \textbf{diphtheria} & 0.52 & 0.47 & 0.52 & 0.49 & 0.51 & 0.56 & 0.52 & 0.55 \\ \hline
+        \textbf{HIV AIDS} & -0.77 & -0.77 & -0.76 & -0.78 & -0.76 & -0.77 & -0.77 & -0.78 \\ \hline
+        \textbf{GDP} & 0.59 & 0.62 & 0.59 & 0.6 & 0.66 & 0.61 & 0.58 & 0.57 \\ \hline
+        \textbf{population} & -0.17 & 0.06 & 0.01 & -0.03 & 0.01 & -0.13 & -0.14 & -0.01 \\ \hline
+        \textbf{thinness 1-19 years} & -0.68 & -0.67 & -0.62 & -0.61 & -0.58 & -0.62 & -0.62 & -0.64 \\ \hline
+        \textbf{thinness 5-9 years} & -0.67 & -0.66 & -0.62 & -0.61 & -0.61 & -0.63 & -0.66 & -0.66 \\ \hline
+        \textbf{HDI} & 0.88 & 0.87 & 0.89 & 0.9 & 0.9 & 0.9 & 0.9 & 0.91 \\ \hline
+        \textbf{schooling} & 0.79 & 0.78 & 0.81 & 0.82 & 0.82 & 0.83 & 0.84 & 0.84 \\ \hline
+    \end{tabular}
+    \caption{Tabela korelacji Spearmana między oczekiwaną długością życia, a poszczególnymi zmiennymi dla lat 2008-2015.}
+\end{table}
+
+Możemy zauważyć, że rozrzut punktów na poszczególnych wykresach jest bardzo zróżnicowany. Na jednych wydaje się on być całkowicie losowy, natomiast na innych widać pewną zależność. Z tabeli korelacji odczytać możemy, że najsilniejszą ujemną zależność z oczekiwanym czasem życia mają zmienne związane ze śmiertelnością oraz niedowagą. Natomiast pozytywną korelację przejawiają zmienne takie jak BMI, zasięg szczepień na błonicę oraz polio, PKB, a w szczególności średni czas nauczania i wskaźnik rozwoju społecznego. Wysoka korelacja tego ostatniego nie jest zaskoczeniem, ponieważ wskaźnik ten jest wyliczany m. in. z oczekiwanego czasu życia, a więc wartości te naturalnie są od siebie zależne. Interesująca może być za to zależność pomiędzy czasem życia, a nauczaniem. Na wykresie punktowym zauważyć można między nimi liniową korelację. Z kolei, jeśli spojrzymy na wykres dotyczący PKB, na myśl przychodzi nam zależność logarytmiczna. Aby dokładniej zbadać te zależności, poddamy wspomniane zmienne głębszej analizie.
+
+
+
+
+
+# 6. Wpływ edukacji na długość życia
+|      Jako pierwszy przeanalizujemy wpływ czasu edukacji na oczekiwaną długość życia. W tym przypadku rozważymy dane wyłącznie z 2015 roku, czyli te najbardziej aktualne. Na wykresie \ref{fig:scatter_schooling} można zauważyć liniową zależność danych, zatem do zbadania korelacji możemy użyć współczynnika Pearsona. Przyjmuje on wartość $R \approx 0,752$, więc jest to dość mocna korelacja. Dopasujemy teraz do danych prostą regresji korzystając z metody najmniejszych kwadratów. Przyjmijmy model
+$$ Y_i = ax_i + b + \epsilon_i, $$
+gdzie $x_i$ to dane dotyczące czasu nauczania, a $\epsilon_i$ są i.i.d. ze średnią równą 0 i skończoną wariancją. Oznaczmy dane z czasem życia jako $y_i$. Wspomniana metoda polega na znalezieniu takich współczynników $a, b$ dla których funkcja
+$$S(a,b) = \sum_{i = 1}^n (y_i - ax_i - b)^2$$
+przyjmuje wartość najmniejszą. Rozwiązaniem jest para estymatorów
+$$
+    \begin{cases}
+      \hat{a} = R\frac{S_y}{S_x} = \frac{\sum_{i = 1}^n(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i = 1}^n(x_i - \bar{x})^2}\\
+      \hat{b} = \bar{y} - a\bar{x}
+    \end{cases}
+$$
+gdzie $R$ jest współczynnikiem korelacji Pearsona, a $S_x, S_y$ są próbkowymi odchyleniami standardowymi.
+
+```{r scatter_schooling, fig.cap="\\label{fig:scatter_schooling} Prosta regresji wyznaczona dla danych.", fig.align="center", fig.width = 4, fig.height = 3}
+
+df <- data[(!is.na(data$schooling)) & (!is.na(data$life_expectancy)) & (data$year == 2015),]
+regression(df$schooling, df$life_expectancy, "Lata nauki", "Długość życia")
+```
+
+
+Kolejnym punktem będzie analiza residuów (błędów)
+$$e_i = y_i - \hat{y}_i\;,$$
+gdzie $\hat{y}_i = \hat{a}x_i + \hat{b}$. W celu zbadania rozkładu residuów, spójrzmy na ich histogram
+
+```{r hist_schooling, fig.cap="\\label{fig:hist_schooling} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
+ab <- regression(df$schooling, df$life_expectancy, display_plot = FALSE)
+a <- ab[1]
+b <- ab[2]
+e <- df$life_expectancy - a*df$schooling - b
+ggplot(data.frame(e = e), aes(e)) + 
+  geom_histogram(aes(y = after_stat(density)), fill = 'white', color = 'black') + 
+  xlab("Wartość błędu") +
+  theme(axis.title.y = element_blank())
+```
+
+Kształt histogramu jest zbliżony do krzywej gaussowskiej. Średnia wartość residuów wynosi $\mu_e = 0$, a ich wariancja $\sigma_e^2 = 20,81$. Posłużymy się testem Kołmogorowa-Smirnova w celu zbadania normalności rozkładu błędów. Przedstawmy hipotezy:
+
+\begin{itemize}
+\item $\mathcal{H}_0$: wartości residuów są z rozkładu normalnego $\mathcal{N}(0, 20.81)$
+\item $\mathcal{H}_1$: wartości residuów nie są z rozkładu normalnego $\mathcal{N}(0, 20.81)$
+\end{itemize}
+
+```{r, echo = FALSE, eval = FALSE}
+ks.test(e, 'pnorm', 0, sd(e))
+```
+
+Wyznaczona p-wartość wynosi $p = 0,2532$. Ponieważ otrzymany wynik jest wystarczająco duży, to nie mamy podstaw do odrzucenia hipotezy zerowej i możemy przyjąć, że dane pochodzą z rozkładu normalnego $\mathcal{N}(0, 20.81)$. 
+
+|      Analiza residuów jest niezwykle istotna, kiedy decydujemy się robić predykcję danych. Znając rozkład błędów, możemy wyznaczyć przedziały ufności o danym poziomie istotności dla przewidywanych wyników. Innymi słowy możemy wyznaczyć prawdopodobieństwo z jakim predykowana wartość zmieści się w konkretnym przedziale. Wyniki, które otrzymaliśmy mogą być podstawą do wykonania takiej predykcji, jednak wcześniej należałoby jeszcze sprawdzić, czy residua są od siebie niezależne oraz czy ich wariancja jest stała.
+
+
+
+
+
+# 7. PKB państwa, a długość życia
+
+|      Podobnie jak w przypadku długości edukacji, będziemy analizować dane dotyczące PKB wyłącznie z 2015 roku. W przeciwieństwie do poprzedniego przypadku, dane te nie są zależne liniowo. Ich wykres punktowy kształtem przypomina bardziej zależność logarytmiczną. Sprawdźmy zatem, czy w rzeczywistości tak jest nakładając logarytm na wartości PKB.
+
+```{r scatter_gdp_line, fig.cap="\\label{fig:scatter_gdp_line} Wykresy punktowe z surowych danych po lewej i z przetransformowanych po prawej.", fig.align="center", fig.width = 6, fig.height = 2}
+df2 <- data[(!is.na(data$GDP)) & (!is.na(data$life_expectancy)) & (data$year == 2015),]
+scat2 <- ggplot(data = df2, mapping = aes(x = GDP, y = life_expectancy)) + geom_point(alpha=0.5) + 
+  xlab("PKB") +
+  ylab("Długość życia")
+scat2_mod <- ggplot(data = df2, mapping = aes(x = log(GDP), y = life_expectancy)) + geom_point(alpha=0.5) +
+  xlab("log(PKB)") +
+  theme(axis.title.y = element_blank())
+plot_grid(scat2, scat2_mod)
+```
+
+Możemy zauważyć, że dane po transformacji przypominają bardziej zależne liniowo, choć są dość mocno rozrzucone. Współczynnik korelacji Pearsona dla przetransformowanych danych wynosi 0.52. Przyjmnijmy model
+$$ Y_i = a\log(x_i) + b + \epsilon_i, $$
+gdzie $x_i$ są danymi z PKB, a $\epsilon_i$ są i.i.d. o średniej równej 0 i skończonej wariancji. Aby jednak otrzymać model lioniowy jak w punkcie 6, podstawiamy $z_i = \log(x_i)$ i otrzymujemy
+$$ Y_i = az_i + b + \epsilon_i. $$
+Teraz już możemy skorzystać z metody najmniejszych kwadratów, aby dopasować prostą regresji. W ten sposób otrzymujemy estymatory postaci
+$$
+    \begin{cases}
+      \hat{a} = \frac{\sum_{i = 1}^n(z_i - \bar{z})(y_i - \bar{y})}{\sum_{i = 1}^n(z_i - \bar{z})^2} \\
+      \hat{b} = \bar{y} - a\bar{z}
+    \end{cases}
+$$
+
+```{r reg_gdp_final, fig.cap="\\label{fig:reg_gdp_final} Po lewej prosta regresji dla przetransformowanych danych. Po prawej krzywa regresji dopasowana do oryginalnych danych.", fig.align="center", fig.width =6, fig.height = 2}
+c(a1, b1) %<-% regression(log(df2$GDP), df2$life_expectancy, display_plot=FALSE)
+xs1 <- seq(min(log(df2$GDP)), max(log(df2$GDP)), 0.1)
+reg2 <- ggplot() + geom_point(aes(log(df2$GDP), df2$life_expectancy), alpha = 0.5) + 
+  geom_line(aes(xs1, a1*xs1 + b1), col='red', linewidth=1) +
+  xlab("log(PKB)") +
+  ylab("Długość życia")
+
+c(a2, b2) %<-% regression(log(df2$GDP), df2$life_expectancy, display_plot=FALSE)
+xs2 <- seq(0.1, max(df2$GDP), 10)
+reg2_final <- ggplot() + geom_point(aes(df2$GDP, df2$life_expectancy), alpha = 0.5) + 
+  geom_line(aes(xs2, a2*log(xs2) + b2), col='red', linewidth=1) +
+  xlab("PKB") +
+  theme(axis.title.y = element_blank())
+
+plot_grid(reg2, reg2_final)
+```
+
+Jak możemy zobaczyć, krzywa logarytmiczna w miarę pokrywa się z danymi, więc można przyjać ją za przybliżenie zależności pomiędzy dwoma zmiennymi. Ważną obserwacją jest to, że największy wzrost mamy dla bardzo małych wartości PKB - im jest większe, tym wolniej rośnie długość życia. Oznacza to, że dla państw z małym PKB, nawet niewielki jego wzrost może przyczynić się do znacznego zwiększenia długości życia, zaś dla państw lepiej rozwinietych, wzrost PKB ma już na to nieznaczny wpływ.
