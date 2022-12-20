@@ -12,7 +12,7 @@ fontsize: 12pt
 \raggedbottom
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE, fig.pos = "H")
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE, fig.pos = "H", dev.args=list(encoding="CP1257.enc"))
 ```
 
 ```{r}
@@ -60,7 +60,7 @@ E <- Y - a*X - b
 
 ```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
 ggplot() +
-  geom_point(aes(X, Y), alpha=0.6, size=2.2) +
+  geom_point(aes(X, Y), alpha=0.6, size=1) +
   xlab("Czas nauki") +
   ylab("Długość życia")
 ```
@@ -102,8 +102,8 @@ $$ \hat{y_i} = \hat{\beta_1} x_i + \hat{\beta_0}. $$
 
 ```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczona dla danych.", fig.align="center", fig.width = 6, fig.height = 3}
 ggplot() + 
-  geom_point(aes(X, Y, col='a')) + 
-  geom_line(aes(X, a*X + b, col='b'), linewidth=1) + 
+  geom_point(aes(X, Y, col='a'), size=0.5) + 
+  geom_line(aes(X, a*X + b, col='b'), linewidth=0.5) + 
   scale_color_manual(labels=c("Dane", "Prosta regresji"), values=c('#008cff', "#da350b")) +
   labs(col="") +
   xlab("Czas nauki") +
@@ -132,11 +132,11 @@ czyli realizacji zmiennych $\epsilon_i$. Ponieważ estymatory $\hat{\beta_1}, \h
 df <- data.frame(X=X, Y=Y, E=E)
 df <- df %>% arrange(X)
 ggplot() + 
-  geom_point(aes(1:length(E), df$E)) + 
-  geom_line(aes(1:length(E), 0), linewidth=1) +
+  geom_point(aes(1:length(E), df$E), size=0.5, col="#1b65f9", alpha=0.7) + 
+  geom_line(aes(1:length(E), 0), linewidth=0.5) +
   labs(col="") +
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
-  ylab("Wartość błędu")
+  ylab(TeX("$e_i$"))
 ```
 
 |      W przypadku założenia drugiego obliczymy wariancje częściowe postaci
@@ -185,7 +185,7 @@ r_s = g_s / g_(E, 0)
 r_s2 = g_s2 / g_(Xt, 0)
 
 ggplot() + 
-  geom_point(aes(hs, r_s), size=2.2) +
+  geom_point(aes(hs, r_s), size=1) +
   labs(col="") +
   xlab(TeX("$h$")) +
   ylab(TeX('$\\hat{\\rho}(h)$'))
@@ -199,7 +199,7 @@ Na wykresie \ref{fig:res_korelacja} widać, że dla $h \neq 0$ funkcja $\hat{\rh
 ggplot() + 
   geom_histogram(aes(x=E, y=..density..), bins=13) +
   xlab(TeX("$e_i$")) +
-  ylab(TeX("gęstość"))
+  ylab(TeX("Gęstość"))
 ```
 
 Kształt histogramu przypomina nieco rozkład normalny. Załóżmy, że w rzeczywistości tak jest. Wtedy nieobciążonym estymatorem wariancji jest
@@ -210,11 +210,11 @@ S <- sum(E^2) / (n - 2)
 xs <- seq(min(E), max(E) + 3, 0.01)
 ggplot() + 
   geom_histogram(aes(x=E, y=..density.., fill='a'), bins=13) + 
-  geom_line(aes(xs, dnorm(xs, 0, sqrt(S)), col='b'), linewidth=1.5) + 
+  geom_line(aes(xs, dnorm(xs, 0, sqrt(S)), col='b'), linewidth=1) + 
   scale_color_manual(labels=c("gęstość teoret."), values=c('#f13b3b')) +
   scale_fill_manual(labels=c("histogram"), values=c('#586974')) +
   labs(col="", fill="") +
-  xlab("Wartość błędu") +
+  xlab(TeX("$e_i$")) +
   ylab("Gęstość")
 ```
 
@@ -222,11 +222,11 @@ ggplot() +
 F <- ecdf(E)
 xs <- seq(min(E), max(E), 0.01)
 ggplot() + 
-  geom_line(aes(x=xs, y=F(xs), col='a'), linewidth=1) + 
-  geom_line(aes(x=xs, y=pnorm(xs, 0, sqrt(S)), col='b'), linewidth=1) +
+  geom_line(aes(x=xs, y=F(xs), col='a'), linewidth=0.5) + 
+  geom_line(aes(x=xs, y=pnorm(xs, 0, sqrt(S)), col='b'), linewidth=0.5) +
   scale_color_manual(labels=c("Dystrybuanta empir.", "Dystrybuanta teoret."), values=c('#00b3ff', "#d36f12")) +
   labs(col="") +
-  xlab("Wartość błędu") +
+  xlab(TeX("$e_i$")) +
   ylab("Dystrybuanta")
 ```
 
