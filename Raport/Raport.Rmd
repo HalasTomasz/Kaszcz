@@ -110,7 +110,7 @@ ggplot() +
   ylab("Długość życia")
 ```
 
-Jak możemy zauważyć wyznaczona prosta pokrywa się z danymi.
+Jak możemy zauważyć wyznaczona prosta pokrywa się z danymi. Wspołczynnik determinancji, czyli $R^2$ wyniósł 0.67, a więc jest to dość zadowalające dopasowanie.
 
 
 
@@ -139,27 +139,25 @@ ggplot() +
   ylab("Wartość błędu")
 ```
 
-|      W przypadku założenia drugiego najpierw obliczymy wariancję residuów korzystając z nieobciążonego estymatora postaci
-$$ S = \frac{1}{n - 2} \sum_{i=1}^n e_i^2. $$
-Dla naszych danych otrzymaliśmy $S \approx 20.93$. Następnie policzymy wariancje częściowe tj.
-$$ S_k = \frac{1}{k - 2} \sum_{i=1}^k e_i^2, \ \ \ k = 3, \dots, n. $$
+|      W przypadku założenia drugiego obliczymy wariancje częściowe postaci
+$$ S^2_k = \frac{1}{k - 1} \sum_{i=1}^k e_i^2, \ \ \ k = 2, \dots, n. $$
 
-```{r res_wariancja, fig.cap="\\label{fig:res_wariancja} Porównanie wariancji częściowej $S_k$ residuów dla $k = 2,... , n$ z wariancją z całej próby, czyli $S$.", fig.align="center", fig.width = 6, fig.height = 3}
+```{r res_wariancja, fig.cap="\\label{fig:res_wariancja} Porównanie wariancji częściowej $S^2_k$ residuów dla $k = 2,... , n$ z wariancją z całej próby, czyli $S^2_n$.", fig.align="center", fig.width = 6, fig.height = 3}
 n <- length(E)
 varE <- c()
-for (i in 3:n) {
-    varE <- append(varE, sum(E[1:i]^2) / (i - 2))
+for (i in 2:n) {
+    varE <- append(varE, var(E[1:i]))
 }
 ggplot() + 
-  geom_line(aes(3:n, varE, col='a')) + 
-  geom_line(aes(3:n, sum(E^2) / (n - 2), col='b')) +
-  scale_color_manual(labels=c(TeX("$S_k$"), TeX("$S$")), values=c('#00b3ff', "#d36f12")) +
+  geom_line(aes(2:n, varE, col='a')) + 
+  geom_line(aes(2:n, var(E), col='b')) +
+  scale_color_manual(labels=c(TeX("$S^2_k$"), TeX("$S^2_n$")), values=c('#00b3ff', "#d36f12")) +
   labs(col="") +
   xlab(TeX("$k$")) +
   ylab("Wariancja")
 ```
 
-Na powyższym wykresie zobaczyć możemy, że wariancja częściowa wraz ze zwiększającym się $k$ szybko zbiega do wartości wariancji z całej próbki i oscyluje wokół niej. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona.
+Na powyższym wykresie zobaczyć możemy, że wariancja częściowa wraz ze zwiększającym się $k$ szybko zbiega do wartości wariancji z całej próbki i oscyluje wokół niej. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona i stała.
 
 |      Aby zweryfikować, czy spełnione jest założenie trzecie, skorzystamy z funkcji empirycznej autokorelacji o postaci
 $$ \hat{\rho}(h) = \dfrac{\hat{\gamma}(h)}{\hat{\gamma}(0)}, $$
@@ -195,6 +193,8 @@ ggplot() +
 
 Na wykresie \ref{fig:res_korelacja} widać, że dla $h \neq 0$ funkcja $\hat{\rho}(h)$ oscyluje wokół zera, zatem wnioskujemy, że residua są od siebie niezależne.
 
+|      Teraz postaramy się znaleźć rozkład błędów $e_i$. Zaczniemy od spojrzenia na ich histogram (wykres \ref{fig:res_histogram}).
+
 ```{r res_histogram, fig.cap="\\label{fig:res_histogram} Histogram residuów.", fig.align="center", fig.width = 4, fig.height = 3}
 ggplot() + 
   geom_histogram(aes(x=E, y=..density..), bins=13) +
@@ -202,11 +202,15 @@ ggplot() +
   ylab(TeX("gęstość"))
 ```
 
-```{r res_gestosc, fig.cap="\\label{fig:res_gestosc} Porównanie histogramu z danych z gęstością teoretyczną rozkładu $\\mathcal{N}(0, s)$.", fig.align="center", fig.width = 6, fig.height = 3}
+Kształt histogramu przypomina nieco rozkład normalny. Załóżmy, że w rzeczywistości tak jest. Wtedy nieobciążonym estymatorem wariancji jest
+$$ S^2 = \frac{1}{n - 2} \sum_{i=1}^n e_i^2 \approx 20.93 \ . $$
+
+```{r res_gestosc, fig.cap="\\label{fig:res_gestosc} Porównanie histogramu z danych z gęstością teoretyczną rozkładu $\\mathcal{N}(0, S^2)$.", fig.align="center", fig.width = 6, fig.height = 3}
+S <- sum(E^2) / (n - 2)
 xs <- seq(min(E), max(E) + 3, 0.01)
 ggplot() + 
   geom_histogram(aes(x=E, y=..density.., fill='a'), bins=13) + 
-  geom_line(aes(xs, dnorm(xs, 0, sd(E)), col='b'), linewidth=1.5) + 
+  geom_line(aes(xs, dnorm(xs, 0, sqrt(S)), col='b'), linewidth=1.5) + 
   scale_color_manual(labels=c("gęstość teoret."), values=c('#f13b3b')) +
   scale_fill_manual(labels=c("histogram"), values=c('#586974')) +
   labs(col="", fill="") +
@@ -214,28 +218,26 @@ ggplot() +
   ylab("Gęstość")
 ```
 
-```{r res_dystrybuanta, fig.cap="\\label{fig:res_dystrybuanta} Porównanie dystrybuanty empirycznej z danych z dystrybuantą teoretyczną rozkładu $N(0, s)$.", fig.align="center", fig.width = 6, fig.height = 3}
+```{r res_dystrybuanta, fig.cap="\\label{fig:res_dystrybuanta} Porównanie dystrybuanty empirycznej z danych z dystrybuantą teoretyczną rozkładu $N(0, S^2)$.", fig.align="center", fig.width = 6, fig.height = 3}
 F <- ecdf(E)
 xs <- seq(min(E), max(E), 0.01)
 ggplot() + 
   geom_line(aes(x=xs, y=F(xs), col='a'), linewidth=1) + 
-  geom_line(aes(x=xs, y=pnorm(xs, 0, sd(E)), col='b'), linewidth=1) +
+  geom_line(aes(x=xs, y=pnorm(xs, 0, sqrt(S)), col='b'), linewidth=1) +
   scale_color_manual(labels=c("Dystrybuanta empir.", "Dystrybuanta teoret."), values=c('#00b3ff', "#d36f12")) +
   labs(col="") +
   xlab("Wartość błędu") +
   ylab("Dystrybuanta")
 ```
 
-Kształt histogramu jest zbliżony do krzywej gaussowskiej. Średnia wartość residuów wynosi $\mu_e = 0$, a ich wariancja $\sigma_e^2 = 20,81$. Posłużymy się testem Kołmogorowa-Smirnova w celu zbadania normalności rozkładu błędów. Przedstawmy hipotezy:
+Na wykresie \ref{fig:res_gestosc} zauważamy, że histogram w miarę pokrywa się z gęstoością teoretyczną. Nie spodziewamy się tutaj bardzo dokładnego pokrywania ze względu na niewielką liczbę danych. Z kolei na wykresie \ref{fig:res_dystrybuanta} widzimy, że dystrybuanta empiryczna wyraźnie nakłada się z dystrybuantą teoretyczną. Aby umocnić nasze przekonania co do normalności residuów, przeprowadzimy test Kołmogorowa-Smirnowa. Przedstawmy hipotezy:
 
 \begin{itemize}
-\item $\mathcal{H}_0$: wartości residuów są z rozkładu normalnego $\mathcal{N}(0, 20.81)$
-\item $\mathcal{H}_1$: wartości residuów nie są z rozkładu normalnego $\mathcal{N}(0, 20.81)$
+\item $\mathcal{H}_0$: wartości residuów są z rozkładu $\mathcal{N}(0, S^2)$
+\item $\mathcal{H}_1$: wartości residuów nie są z rozkładu $\mathcal{N}(0, S^2)$
 \end{itemize}
 
-Wyznaczona p-wartość wynosi $p = 0,2532$. Ponieważ otrzymany wynik jest wystarczająco duży, to nie mamy podstaw do odrzucenia hipotezy zerowej i możemy przyjąć, że dane pochodzą z rozkładu normalnego $\mathcal{N}(0, 20.81)$. 
-
-|      Analiza residuów jest niezwykle istotna, kiedy decydujemy się robić predykcję danych. Znając rozkład błędów, możemy wyznaczyć przedziały ufności o danym poziomie istotności dla przewidywanych wyników. Innymi słowy możemy wyznaczyć prawdopodobieństwo z jakim predykowana wartość zmieści się w konkretnym przedziale. Wyniki, które otrzymaliśmy mogą być podstawą do wykonania takiej predykcji, jednak wcześniej należałoby jeszcze sprawdzić, czy residua są od siebie niezależne oraz czy ich wariancja jest stała.
+Otrzymana p-wartość testu wynosi 0,2532. Ponieważ otrzymany wynik jest wystarczająco duży, to nie mamy podstaw do odrzucenia hipotezy zerowej i możemy przyjąć, że dane pochodzą z rozkładu $\mathcal{N}(0, S^2)$.
 
 
 
