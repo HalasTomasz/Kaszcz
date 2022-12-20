@@ -56,7 +56,33 @@ E <- Y - a*X - b
 
 
 \section{Opis danych}
-|      Dane, z których będziemy korzystać, opisują wiele cech 183 państw w latach 2000-2015. My jednak skorzystamy wyłącznie z oczekiwanej długości życia i średniego czasu edukacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku zawarta jest pełna informacja o 173 krajach.
+|      Nasze dane składają się z poszczególnych kolumn:
+\begin{itemize}
+  \item country -- kolumna zawiera informacje o kraju, z jakiego pochodza dane;
+  \item year -- rok w którym uzyskano dane;
+  \item status -- informacja o aktualnym statusie rozwoju kraju;
+  \item life\_expectancy -- przewidywana długośc życia mieszkańców w danym kraju;
+  \item adult\_mortality -- liczba śmierci osób wieku 15--60 lat na 1000 osób populacji;
+  \item infant\_deaths -- liczba śmierci noworodków na 1000 osób populacji;
+  \item alcohol -- ilośc wypijanych litrów alkokolów na każdeego mieszkańca powyżej 15 roku życia;
+  \item percentage\_expenditure  -- wydatki na zdrowie wyliczane wstosunku do produktu krajowego brutto na mieszkańca kraju;
+  \item hepatitis\_B -- stopień uodpornienia na wirusowe zapalenie wątroby typu B wśród dzieci w wieku 1 lat;
+  \item measles -- liczba zgłoszonych przypadków na 1000 osób populacji;
+  \item BMI -- średni wskaźnik masy ciała dla całej populacji;
+  \item under\_five\_deaths -- liczba śmierci dzieci ponizej 5 lat na 1000 osób populajcji;
+  \item polio -- stopień uodpornienia na wirusa Polio wśród 1--latków;
+  \item total\_expenditure -- wydatki sektora publicznego na zdrowie jako odsetek całkowitych wydatków;
+  \item diphtheria -- stopień uodpornienia na błonicę, tężec i krztusiec wśród dzieci w wieku 1 lat;
+  \item HIV\_AIDS -- liczba zgonów spowodowana AIDS na 1000 dzieci do 4 roku życia;
+  \item GDP -- produkt krajowy brutto na mieszkańca w dollarach;
+  \item population -- populacja danego kraju
+  \item thinness\_1\_19\_years -- występowanie szczupłości wśród dzieci i młodzieży w wieku od 10 do 19 lat;
+  \item thinness\_5\_9\_years -- występowanie szczupłości wśród dzieci i młodzieży w wieku od 5 do 9 lat;
+  \item HDI -- stopień rozwoju społeczno-ekonomicznego poszczególnych krajów;
+  \item schooling -- średnia liczba lat spędzonych na nauce w szkołach.
+\end{itemize}
+
+Widzimy, że mamy nasz zbiór zawiera bardzo dużo informacji o poszczególnych 183 krajach, pozyskanych w latach 2000--2015, pozwalających okreslić ich aktualny rozwój lub możliwy poziom życia mieszkanców.  W naszym raporcie skorzystamy wyłącznie z oczekiwanej długości życia i średniego czasu edukacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku zawarta jest pełna informacja o 173 krajach.
 
 ```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
 ggplot() +
@@ -68,11 +94,36 @@ ggplot() +
 Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma zmiennymi. W dalszej części poddamy ją głębszej analizie.
 
 
-
-
-
 \section{Statystyki}
 
+Nasze dane składają się z bardzo duzej liczby kolumn Wybraliśmy najważniejsze statystyki takie jak : \textit{life\_expectancy}, \textit{adult\_mortality}, \textit{BMI}, \textit{GDP}, \textit{population}, \textit{HDI}, \textit{schooling} dla których następnie zostały wyliczone podstawowe parametry statystyczne. Wyniki przedstawiliśmy w poniższej \ref{tab:data} tabeli:
+
+ \begin{table}[H]
+       \caption{Tabela z parametrami statystycznymi.?}
+      \label{tab:data}
+      \centering
+      \begin{tabular}{|c|c|c|c|c|c|c|c|}
+          \hline
+           & \textit{life\_expectancy} & \textit{adult\_mortality} &  \textit{BMI} & \textit{GDP} & \textit{population} & \textit{HDI} & \textit{schooling} \\
+          \hline
+          Minimum & 51.00 & 1.0 & 2.5 & 33.68 & 2966 & 0.3470 & 4.90 \\
+          \hline
+          1 Kwartyl? & 66.00 & 74.0 & 24.25 & 777.25 &  268071 & 0.5650 & 10.80 \\
+          \hline
+          Mediana & 73.90 & 138.0 & 49.90 & 2954.12 & 2076086 & 0.7230 & 13.10   \\
+          \hline
+          Średnia & 71.71 & 151.4 & 42.81 & 7229.50 & 11097408 & 0.6917 & 12.93   \\
+          \hline
+          3 Kwartyl? & 76.70  & 211.0  & 61.35 & 7388.98  & 9940296  & 0.7980  & 15.00\\
+          \hline
+          Maksimum & 88.00 & 484.0 & 77.60 & 66346.52 & 258162113 & 0.9480 & 20.40 \\
+          \hline
+          NA’s & 0 & 0 & 2 & 20 & 31 & 0 & 0 \\
+          \hline
+  \end{tabular}
+\end{table}
+
+Widzimy, że oczekiwana długość życia jest wynosi srednio około 72 lata. Tutaj warto zaznaczyć, ze istnieje dużą dysproporcja, w czynnikach które mają wpływ na ten parametr. Patrząc przykładowo na GDI, widizmy że istnieje spora rozbieżność pomiędzy krajami lub na schooling, gdzie niekiedy eduakcja trwa 5 a czasem 20 lat. Parametry przedstawione w tabeli \ref{tab:data}}  bezpośrednio przekładają się na dłguość życia. W swoim raporcie przyjżymy się korelacji  pomiędzy \textit{schooling}, a \textit{life\_expectancy}.
 
 
 
@@ -245,9 +296,28 @@ Otrzymana p-wartość testu wynosi 0,2532. Ponieważ otrzymany wynik jest wystar
 
 \section{Przedziały ufności}
 
+ W celu skostrukcji przedziałów ufności posłużymy się estymatorami $\hat{\beta_0}$ $\hat{\beta_1}$ i ich własnościami:
+$$\mathrm{E}\left[\hat{\beta_0} \right] = \hat{\beta_0} \quad \text{oraz} \quad \mathrm{E}\left[\hat{\beta_1} \right] = \hat{\beta_1}$$ 
+$$Var(\hat{\beta_0}) = \sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right)$$
 
+$$Var(\hat{\beta_1}) = \frac{\sigma^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}$$
+oraz wiemy, że 
 
+$$ \epsilon_i  \sim \mathcal{N}(0,\,\sigma^{2})\,. $$
 
+$$ \hat{\beta_0} \sim \mathcal{N}(\mathrm{E}\left[\hat{\beta_0} \right],\,Var[\hat{\beta_0}])\,. $$
 
+$$ \hat{\beta_1} \sim \mathcal{N}(\mathrm{E}\left[\hat{\beta_1} \right],\,Var[\hat{\beta_1}])\,. $$
+Na podstawie powyższych informacji tworzymy przedziały ufności dla estymatorów $\hat{\beta_0}$ $\hat{\beta_1}$, uwzględniajać ze parametr $\sigma$ jest nieznany.
+
+$$ \mathcal{P} \left(\hat{\beta_0} < z_2 \right) =  1 - \frac{\alpha}{2}$$
+$$ \mathcal{P} \left( -z_2 < \hat{\beta_0} < z_2 \right) =  1 - \alpha$$
+$$ \mathcal{P} \left( -z_2 < \frac{\hat{\beta_0} - \beta_0}{S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}}} < z_2 \right) =  1 - \frac{\alpha}{2}$$
+$$ \mathcal{P} \left( \hat{\beta_0} -z_2S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_0 < \hat{\beta_0} + z_2S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \frac{\alpha}{2}$$
+Otrzymaliśmy przedział ufności dla parametru $\beta_0$, gdzie $z_2$ jest kwantylem pochodzącym z rozkładu $t$-studenta z $n-2$ stopniami swobody. Analogicznie wyliczamy przedział ufności dla parametru $\beta_1$. Wygląda on następująco:
+
+$$ \mathcal{P} \left( \hat{\beta_1} -z_2S\sqrt{\frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_1 < \hat{\beta_1} + z_2S\sqrt{ \frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \frac{\alpha}{2}$$
+
+Dla otrzymanych przedziałow ufności ... dociągnać plus wykresy
 \section{Predykcja}
 
