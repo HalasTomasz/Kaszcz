@@ -49,7 +49,7 @@ E <- Y - a*X - b
 
 \section{Wstęp}
 <!-- Akapit - 6 spacji -->
-|      Celem raportu jest zbadanie liniowej korelacji pomiędzy edukacją, a długością życia. Wykorzystane do tego zostaną dane dostępne pod [$\color{blue}{\text{linkiem}}$](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who?fbclid=IwAR2HtwUPyioM4tHmuae7B2owTUB8q3XlmpP12LbTM9NYDsi4qtaWGOYoNDE). Przeprowadzimy dokładną analizę zależności między dwoma zmiennymi oraz zastosujemy odpowiednie metody, by dopasować prostą regresji do danych, po czym zweryfikujemy czy dopasowanie można uznać prawidłowe. Otrzymane wyniki wykorzystane zostaną do przeprowadzenia predykcji długości życia w zależności od czasu edukacji.
+|      Celem raportu jest zbadanie liniowej korelacji pomiędzy edukacją, a długością życia. Wykorzystane do tego zostaną dane dostępne pod [$\color{blue}{\text{linkiem}}$](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who?fbclid=IwAR2HtwUPyioM4tHmuae7B2owTUB8q3XlmpP12LbTM9NYDsi4qtaWGOYoNDE). Przeprowadzimy dokładną analizę zależności między dwoma zmiennymi oraz zastosujemy odpowiednie metody, by dopasować prostą regresji do danych, po czym zweryfikujemy czy dopasowanie można uznać za prawidłowe. Otrzymane wyniki wykorzystane zostaną do przeprowadzenia predykcji długości życia w zależności od czasu edukacji.
 
 
 
@@ -57,7 +57,7 @@ E <- Y - a*X - b
 
 \section{Opis danych}
 
-Widzimy, że mamy nasz zbiór zawiera bardzo dużo informacji o poszczególnych 183 krajach, pozyskanych w latach 2000--2015, pozwalających okreslić ich aktualny rozwój lub możliwy poziom życia mieszkanców.  W naszym raporcie skorzystamy wyłącznie z oczekiwanej długości życia i średniego czasu edukacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku zawarta jest pełna informacja o 173 krajach.
+|      Dane, z których będziemy korzystać zawierają dużo informacji o poszczególnych 183 krajach, pozyskanych w latach 2000--2015, pozwalających okreslić ich aktualny rozwój lub możliwą długość życia mieszkanców. W naszym raporcie skorzystamy wyłącznie z oczekiwanej długości życia, średniego czasu edukacji oraz populacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku pełna informacja o pierwszych dwóch zmiennych zawarta jest dla 173 krajów.
 
 ```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
 ggplot() +
@@ -71,32 +71,32 @@ Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma z
 
 \section{Statystyki}
 
-Nasze dane składają się z bardzo duzej liczby kolumn Wybraliśmy najważniejsze statystyki takie jak : \textit{life\_expectancy}, \textit{schooling} dla których następnie zostały wyliczone podstawowe parametry statystyczne. Wyniki przedstawiliśmy w poniższej \ref{tab:data} tabeli:
+|      Dla badanych zmiennych, czyli oczekiwanej długości życia i średniego czasu edukacji, obliczyliśmy najważniejsze statystyki. Wyniki przedstawiliśmy w poniższej tabeli:
 
  \begin{table}[H]
-       \caption{Tabela z parametrami statystycznymi.?}
-      \label{tab:data}
+      \label{tab:satatystyki}
       \centering
       \begin{tabular}{|c|c|c|c|c|c|c|c|}
           \hline
-           & \textit{life\_expectancy} &  \textit{schooling} \\
+           & Długość życia & Czas edukacji \\
+          \hline
+          Średnia & 71.71 & 12.93 \\
+          \hline
+          Mediana & 73.90  & 13.10 \\
+          \hline
+          Odch. stand. &  &  \\
           \hline
           Minimum & 51.00  & 4.90 \\
           \hline
-          1 Kwartyl? & 66.00  & 10.80 \\
-          \hline
-          Mediana & 73.90  & 13.10   \\
-          \hline
-          Średnia & 71.71 & 12.93   \\
-          \hline
-          3 Kwartyl? & 76.70  & 15.00\\
-          \hline
           Maksimum & 88.00 & 20.40 \\
           \hline
+          IQR & 10.70 & 4.20 \\
+          \hline
   \end{tabular}
+  \caption{Najważniejsze statystyki obliczone dla badanych danych.}
 \end{table}
 
-Widzimy, że oczekiwana długość życia jest wynosi średnio około 72 lata. Natomiast parametr schooling oznacza się duża rozbieżnościa. Zauważyliśmy tutaj istneieje pewnej zależności liniowiej.  W swoim raporcie przyjżymy się korelacji  pomiędzy \textit{schooling}, a \textit{life\_expectancy}.
+Widzimy, że oczekiwana długość życia wynosi średnio około 72 lata. Natomiast czas nauczania odznacza się dużą rozbieżnością. Chcąc jednak otrzymać średnią długość życia dla jednej osoby, musimy uwzględnić to, dla każdego kraju jego oczekiwana długość życia przypada na każdego obywatela, a badane państwa mają różne populacje. Nie możemy zatem traktować ich jednakowo. Z tego powodu skorzystamy ze średniej ważonej, gdzie wagami będą populacje. Otrzymaliśmy wynik równy 70.13, przy czym należy zaznaczyć, że jest to wynik dla 142 państw, ponieważ kolumna zawierająca dane o populacji ma więcej brakujących danych.
 
 
 
