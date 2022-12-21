@@ -56,31 +56,6 @@ E <- Y - a*X - b
 
 
 \section{Opis danych}
-|      Nasze dane składają się z poszczególnych kolumn:
-\begin{itemize}
-  \item country -- kolumna zawiera informacje o kraju, z jakiego pochodza dane;
-  \item year -- rok w którym uzyskano dane;
-  \item status -- informacja o aktualnym statusie rozwoju kraju;
-  \item life\_expectancy -- przewidywana długośc życia mieszkańców w danym kraju;
-  \item adult\_mortality -- liczba śmierci osób wieku 15--60 lat na 1000 osób populacji;
-  \item infant\_deaths -- liczba śmierci noworodków na 1000 osób populacji;
-  \item alcohol -- ilośc wypijanych litrów alkokolów na każdeego mieszkańca powyżej 15 roku życia;
-  \item percentage\_expenditure  -- wydatki na zdrowie wyliczane wstosunku do produktu krajowego brutto na mieszkańca kraju;
-  \item hepatitis\_B -- stopień uodpornienia na wirusowe zapalenie wątroby typu B wśród dzieci w wieku 1 lat;
-  \item measles -- liczba zgłoszonych przypadków na 1000 osób populacji;
-  \item BMI -- średni wskaźnik masy ciała dla całej populacji;
-  \item under\_five\_deaths -- liczba śmierci dzieci ponizej 5 lat na 1000 osób populajcji;
-  \item polio -- stopień uodpornienia na wirusa Polio wśród 1--latków;
-  \item total\_expenditure -- wydatki sektora publicznego na zdrowie jako odsetek całkowitych wydatków;
-  \item diphtheria -- stopień uodpornienia na błonicę, tężec i krztusiec wśród dzieci w wieku 1 lat;
-  \item HIV\_AIDS -- liczba zgonów spowodowana AIDS na 1000 dzieci do 4 roku życia;
-  \item GDP -- produkt krajowy brutto na mieszkańca w dollarach;
-  \item population -- populacja danego kraju
-  \item thinness\_1\_19\_years -- występowanie szczupłości wśród dzieci i młodzieży w wieku od 10 do 19 lat;
-  \item thinness\_5\_9\_years -- występowanie szczupłości wśród dzieci i młodzieży w wieku od 5 do 9 lat;
-  \item HDI -- stopień rozwoju społeczno-ekonomicznego poszczególnych krajów;
-  \item schooling -- średnia liczba lat spędzonych na nauce w szkołach.
-\end{itemize}
 
 Widzimy, że mamy nasz zbiór zawiera bardzo dużo informacji o poszczególnych 183 krajach, pozyskanych w latach 2000--2015, pozwalających okreslić ich aktualny rozwój lub możliwy poziom życia mieszkanców.  W naszym raporcie skorzystamy wyłącznie z oczekiwanej długości życia i średniego czasu edukacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku zawarta jest pełna informacja o 173 krajach.
 
@@ -96,7 +71,7 @@ Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma z
 
 \section{Statystyki}
 
-Nasze dane składają się z bardzo duzej liczby kolumn Wybraliśmy najważniejsze statystyki takie jak : \textit{life\_expectancy}, \textit{adult\_mortality}, \textit{BMI}, \textit{GDP}, \textit{population}, \textit{HDI}, \textit{schooling} dla których następnie zostały wyliczone podstawowe parametry statystyczne. Wyniki przedstawiliśmy w poniższej \ref{tab:data} tabeli:
+Nasze dane składają się z bardzo duzej liczby kolumn Wybraliśmy najważniejsze statystyki takie jak : \textit{life\_expectancy}, \textit{schooling} dla których następnie zostały wyliczone podstawowe parametry statystyczne. Wyniki przedstawiliśmy w poniższej \ref{tab:data} tabeli:
 
  \begin{table}[H]
        \caption{Tabela z parametrami statystycznymi.?}
@@ -104,26 +79,24 @@ Nasze dane składają się z bardzo duzej liczby kolumn Wybraliśmy najważniejs
       \centering
       \begin{tabular}{|c|c|c|c|c|c|c|c|}
           \hline
-           & \textit{life\_expectancy} & \textit{adult\_mortality} &  \textit{BMI} & \textit{GDP} & \textit{population} & \textit{HDI} & \textit{schooling} \\
+           & \textit{life\_expectancy} &  \textit{schooling} \\
           \hline
-          Minimum & 51.00 & 1.0 & 2.5 & 33.68 & 2966 & 0.3470 & 4.90 \\
+          Minimum & 51.00  & 4.90 \\
           \hline
-          1 Kwartyl? & 66.00 & 74.0 & 24.25 & 777.25 &  268071 & 0.5650 & 10.80 \\
+          1 Kwartyl? & 66.00  & 10.80 \\
           \hline
-          Mediana & 73.90 & 138.0 & 49.90 & 2954.12 & 2076086 & 0.7230 & 13.10   \\
+          Mediana & 73.90  & 13.10   \\
           \hline
-          Średnia & 71.71 & 151.4 & 42.81 & 7229.50 & 11097408 & 0.6917 & 12.93   \\
+          Średnia & 71.71 & 12.93   \\
           \hline
-          3 Kwartyl? & 76.70  & 211.0  & 61.35 & 7388.98  & 9940296  & 0.7980  & 15.00\\
+          3 Kwartyl? & 76.70  & 15.00\\
           \hline
-          Maksimum & 88.00 & 484.0 & 77.60 & 66346.52 & 258162113 & 0.9480 & 20.40 \\
-          \hline
-          NA’s & 0 & 0 & 2 & 20 & 31 & 0 & 0 \\
+          Maksimum & 88.00 & 20.40 \\
           \hline
   \end{tabular}
 \end{table}
 
-Widzimy, że oczekiwana długość życia jest wynosi srednio około 72 lata. Tutaj warto zaznaczyć, ze istnieje dużą dysproporcja, w czynnikach które mają wpływ na ten parametr. Patrząc przykładowo na GDI, widizmy że istnieje spora rozbieżność pomiędzy krajami lub na schooling, gdzie niekiedy eduakcja trwa 5 a czasem 20 lat. Parametry przedstawione w tabeli \ref{tab:data}}  bezpośrednio przekładają się na dłguość życia. W swoim raporcie przyjżymy się korelacji  pomiędzy \textit{schooling}, a \textit{life\_expectancy}.
+Widzimy, że oczekiwana długość życia jest wynosi średnio około 72 lata. Natomiast parametr schooling oznacza się duża rozbieżnościa. Zauważyliśmy tutaj istneieje pewnej zależności liniowiej.  W swoim raporcie przyjżymy się korelacji  pomiędzy \textit{schooling}, a \textit{life\_expectancy}.
 
 
 
@@ -294,7 +267,7 @@ Otrzymana p-wartość testu wynosi 0,2532. Ponieważ otrzymany wynik jest wystar
 
 
 
-\section{Przedziały ufności}
+\section{Przedziały ufności} \label{section:ufnosc}
 
  W celu skostrukcji przedziałów ufności posłużymy się estymatorami $\hat{\beta_0}$ $\hat{\beta_1}$ i ich własnościami:
 $$\mathrm{E}\left[\hat{\beta_0} \right] = \hat{\beta_0} \quad \text{oraz} \quad \mathrm{E}\left[\hat{\beta_1} \right] = \hat{\beta_1}$$ 
@@ -305,19 +278,67 @@ oraz wiemy, że
 
 $$ \epsilon_i  \sim \mathcal{N}(0,\,\sigma^{2})\,. $$
 
-$$ \hat{\beta_0} \sim \mathcal{N}(\mathrm{E}\left[\hat{\beta_0} \right],\,Var[\hat{\beta_0}])\,. $$
+$$ \hat{\beta_0} \sim \mathcal{N} \left(\hat{\beta_0},\,\sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right) \right)\,. $$
 
-$$ \hat{\beta_1} \sim \mathcal{N}(\mathrm{E}\left[\hat{\beta_1} \right],\,Var[\hat{\beta_1}])\,. $$
-Na podstawie powyższych informacji tworzymy przedziały ufności dla estymatorów $\hat{\beta_0}$ $\hat{\beta_1}$, uwzględniajać ze parametr $\sigma$ jest nieznany.
+$$ \hat{\beta_1} \sim \mathcal{N} \left(\hat{\beta_1},\,\frac{\sigma^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right) \,. $$
+Na podstawie powyższych informacji tworzymy przedziały ufności dla estymatorów $\hat{\beta_0}$ $\hat{\beta_1}$. Należy przy tym pamiętać, że dla nieznanego parametru $\sigma$, nasze estymatory mają własność:
+$$
+  \frac{\hat{\beta_0} - \beta_0}{S \sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}
+$$
+oraz
 
-$$ \mathcal{P} \left(\hat{\beta_0} < z_2 \right) =  1 - \frac{\alpha}{2}$$
-$$ \mathcal{P} \left( -z_2 < \hat{\beta_0} < z_2 \right) =  1 - \alpha$$
-$$ \mathcal{P} \left( -z_2 < \frac{\hat{\beta_0} - \beta_0}{S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}}} < z_2 \right) =  1 - \frac{\alpha}{2}$$
-$$ \mathcal{P} \left( \hat{\beta_0} -z_2S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_0 < \hat{\beta_0} + z_2S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \frac{\alpha}{2}$$
-Otrzymaliśmy przedział ufności dla parametru $\beta_0$, gdzie $z_2$ jest kwantylem pochodzącym z rozkładu $t$-studenta z $n-2$ stopniami swobody. Analogicznie wyliczamy przedział ufności dla parametru $\beta_1$. Wygląda on następująco:
+$$
+  \frac{\hat{\beta_1} - \beta_1}{S \sqrt{\frac{1}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}
+$$
+gdzie $S$ wynosi:
+$$ S^2 = \frac{\sum_{i=1}^n (Y_i - \hat{Y} )^2}{n-2} $$
+Korzystając z powyższych własności tworzymy przedziały ufności:
 
-$$ \mathcal{P} \left( \hat{\beta_1} -z_2S\sqrt{\frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_1 < \hat{\beta_1} + z_2S\sqrt{ \frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \frac{\alpha}{2}$$
+$$ P \left( -t_{\frac{\alpha}{2},n-2} < \hat{\beta_0} < t_{1 - \frac{\alpha}{2},n-2}  \right) =  1 - \alpha$$
+rozkład $t$-studenta jest rozkładem symetrycznym, dlatego $t_{\frac{\alpha}{2},n-2} = t_{1-\frac{\alpha}{2},n-2}$. Następnie
 
-Dla otrzymanych przedziałow ufności ... dociągnać plus wykresy
+$$ P \left( -t_{\frac{\alpha}{2},n-2} < \frac{\hat{\beta_0} - \beta_0}{S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}}} < t_{\frac{\alpha}{2},n-2} \right) =  1 - \alpha$$
+$$ P \left( \hat{\beta_0} -t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_0 < \hat{\beta_0} + t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \alpha$$
+Otrzymaliśmy przedział ufności dla parametru $\beta_0$, gdzie $t_{\frac{\alpha}{2},n-2}$ jest kwantylem pochodzącym z rozkładu $t$-studenta z $n-2$ stopniami swobody. Analogicznie wyliczamy przedział ufności dla parametru $\beta_1$. Wygląda on następująco:
+
+$$ P \left( \hat{\beta_1} -t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_1 < \hat{\beta_1} + t_{\frac{\alpha}{2},n-2}S\sqrt{ \frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \alpha$$
+
+Dla naszych dane przedziału ufnosci dla parametru $B_0$ wynoszą [41.707, 44,096] oraz dla $B_1$ [1.818, 2.64]
+
+```{r przedział ufności}
+  n = length(Y)
+  S = sqrt(sum((Y - mean(Y))^2)/(n-2)) 
+  varb0 = S * sqrt(1/n + mean(X)^2/sum((X-mean(X))^2))
+  bLeft = b - qt(.975, df=n-2)*varb0
+  bRight = b + qt(.975, df=n-2)*varb0
+  
+  varb1 = S * sqrt(1/sum((X-mean(X))^2))
+  aLeft = a - qt(.975, df=n-2)*varb1
+  aRight = a + qt(.975, df=n-2)*varb1
+```
+
 \section{Predykcja}
 
+Aby dokonać predykcji będizemy chcieli dokonać estyamcji parametru $Y_0-\hat{Y_0}$, gdzie
+$$Y_0 = \beta_0 + \beta_1 x_0 + \epsilon_0  $$
+
+$$\hat{Y_0} = \mu_{Y_0} = \hat{\beta_0} + \hat{\beta_1}x_0  $$
+Dla zmiennej losowej $Y_0-\hat{Y_0}$ wyliczamy jej wartośc oczekiwaną oraz wariancję:
+
+$$ \mathrm{E}(Y_0-\hat{Y_0}) = \beta_0 + \beta_1 x_0 + \epsilon_0- \hat{\beta_0} - \hat{\beta_1}x_0 = 0  $$ 
+
+
+$$ Var(Y_0-\hat{Y_0}) = Var(Y_0)+ Var(\bar{Y_0}) - 2Cov(Y_0,\bar{Y_0}) $$ 
+
+Nasza $2Cov(Y_0,\bar{Y_0}) = 0$, ponieważ $Y_0$ oraz $\bar{Y_0}$ są od siebie niezależne.
+
+$$ Var(Y_0-\hat{Y_0}) = Var(\beta_0 + \beta_1 x_0 + \epsilon_0)+ Var(\bar{Y} +\hat{\beta_1}(\bar{x}_0 -\bar{x}_n)) = \sigma^2 \left( 1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}  \right) $$ 
+
+Dla powyżsych parametrów konstruowane są przedziały ufności. Ich konstrukcja jest analogiczna do tych przedstawionych w \ref{section:ufnosc}.
+$$
+ \frac{Y_0 - \hat{Y_0}}{S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}}} \sim t_{n-2}
+$$
+
+$$
+  P \left(\hat{Y_0} - t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \leq Y_0 \leq \hat{Y_0} + t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \right) = 1 - \alpha
+$$
