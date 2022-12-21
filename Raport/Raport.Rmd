@@ -59,7 +59,7 @@ E <- Y - a*X - b
 
 |      Dane, z których będziemy korzystać zawierają dużo informacji o poszczególnych 183 krajach, pozyskanych w latach 2000--2015, pozwalających okreslić ich aktualny rozwój lub możliwą długość życia mieszkanców. W naszym raporcie skorzystamy wyłącznie z oczekiwanej długości życia, średniego czasu edukacji oraz populacji w 2015 roku, czyli najbardziej aktualnych danych. Dla tego roku pełna informacja o pierwszych dwóch zmiennych zawarta jest dla 173 krajów.
 
-```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy badanych danych.", fig.align="center", fig.width = 4, fig.height = 3}
+```{r scatter, fig.cap="\\label{fig:scatter} Wykres punktowy zależności pomiędzy czasem edukacji, a długością życia.", fig.align="center", fig.width = 4, fig.height = 3}
 ggplot() +
   geom_point(aes(X, Y), alpha=0.6, size=1) +
   xlab("Czas nauki") +
@@ -73,10 +73,10 @@ Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma z
 
 |      Dla badanych zmiennych, czyli oczekiwanej długości życia i średniego czasu edukacji, obliczyliśmy najważniejsze statystyki. Wyniki przedstawiliśmy w poniższej tabeli:
 
- \begin{table}[H]
-      \label{tab:satatystyki}
-      \centering
-      \begin{tabular}{|c|c|c|c|c|c|c|c|}
+\begin{table}[H]
+    \label{tab:satatystyki}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
           \hline
            & Długość życia & Czas edukacji \\
           \hline
@@ -96,7 +96,7 @@ Na powyższym wykresie widzimy wyraźną zależność liniową pomiędzy dwoma z
   \caption{Najważniejsze statystyki obliczone dla badanych danych.}
 \end{table}
 
-Widzimy, że oczekiwana długość życia wynosi średnio około 72 lata. Natomiast czas nauczania odznacza się dużą rozbieżnością. Chcąc jednak otrzymać średnią długość życia dla jednej osoby, musimy uwzględnić to, dla każdego kraju jego oczekiwana długość życia przypada na każdego obywatela, a badane państwa mają różne populacje. Nie możemy zatem traktować ich jednakowo. Z tego powodu skorzystamy ze średniej ważonej, gdzie wagami będą populacje. Otrzymaliśmy wynik równy 70.13, przy czym należy zaznaczyć, że jest to wynik dla 142 państw, ponieważ kolumna zawierająca dane o populacji ma więcej brakujących danych.
+Widzimy, że oczekiwana długość życia wynosi średnio około 72 lata. Natomiast czas nauczania odznacza się dużą rozbieżnością. Chcąc jednak otrzymać średnią długość życia na świecie, musimy uwzględnić to że, dla każdego kraju jego oczekiwana długość życia przypada na każdego obywatela, a badane państwa mają różne populacje. Nie możemy zatem traktować ich jednakowo. Z tego powodu skorzystamy ze średniej ważonej, gdzie wagami będą populacje. Otrzymaliśmy wynik równy 70.13, przy czym należy zaznaczyć, że jest to wynik dla 142 państw, ponieważ kolumna zawierająca dane o populacji zawiera więcej brakujących danych.
 
 
 
@@ -155,8 +155,9 @@ czyli realizacji zmiennych $\epsilon_i$. Ponieważ estymatory $\hat{\beta_1}, \h
 ```{r res_scatter, fig.cap="\\label{fig:res_scatter} Wykres punktowy residuów.", fig.align="center", fig.width = 4, fig.height = 3}
 df <- data.frame(X=X, Y=Y, E=E)
 df <- df %>% arrange(X)
+E <- df$E
 ggplot() + 
-  geom_point(aes(1:length(E), df$E), size=0.5, col="#1b65f9", alpha=0.7) + 
+  geom_point(aes(1:length(E), E), size=0.5, col="#1b65f9", alpha=0.7) + 
   geom_line(aes(1:length(E), 0), linewidth=0.5) +
   labs(col="") +
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
@@ -267,9 +268,9 @@ Otrzymana p-wartość testu wynosi 0,2532. Ponieważ otrzymany wynik jest wystar
 
 
 
-\section{Przedziały ufności} \label{section:ufnosc}
+\section{Przedziały ufności dla $\beta_1$ i $\beta0$} \label{section:ufnosc}
 
- W celu skostrukcji przedziałów ufności posłużymy się estymatorami $\hat{\beta_0}$ $\hat{\beta_1}$ i ich własnościami:
+|      W celu kostrukcji przedziałów ufności posłużymy się estymatorami $\hat{\beta_0}$ $\hat{\beta_1}$ i ich własnościami:
 $$\mathrm{E}\left[\hat{\beta_0} \right] = \hat{\beta_0} \quad \text{oraz} \quad \mathrm{E}\left[\hat{\beta_1} \right] = \hat{\beta_1}$$ 
 $$Var(\hat{\beta_0}) = \sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right)$$
 
@@ -342,3 +343,8 @@ $$
 $$
   P \left(\hat{Y_0} - t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \leq Y_0 \leq \hat{Y_0} + t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \right) = 1 - \alpha
 $$
+
+
+
+
+\section{Podsumowanie}
