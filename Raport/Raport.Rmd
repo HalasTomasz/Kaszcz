@@ -293,7 +293,7 @@ Ponieważ nie znamy wartości $\sigma^2$, będziemy musieli wykorzystać estymat
 $$ \hat{B_1} = \frac{\hat{\beta_1} - \beta_1}{S \sqrt{\frac{1}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}, $$
 $$ \hat{B_0} = \frac{\hat{\beta_0} - \beta_0}{S \sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}, $$
 
-gdzie \( S^2 = \frac{\sum_{i = 1}^n (Y_i - \hat{Y})^2}{n - 2} \), a $t_{n-2}$ oznacza rozkład t-Studenta z $n-2$ stopniami swobody. Jako pierwszy wyznaczymy przedział ufności dla $\beta_0$. Korzystając z powyższych własności, możemy zapisać
+gdzie \( S = \sqrt{\frac{\sum_{i = 1}^n (Y_i - \hat{Y})^2}{n - 2}} \), a $t_{n-2}$ oznacza rozkład t-Studenta z $n-2$ stopniami swobody. Jako pierwszy wyznaczymy przedział ufności dla $\beta_0$. Korzystając z powyższych własności, możemy zapisać
 
 $$ \mathrm{P} \left( -t_{\frac{\alpha}{2},n-2} < \hat{B_0} < t_{1 - \frac{\alpha}{2},n-2}  \right) =  1 - \alpha, $$
 
@@ -335,29 +335,48 @@ Dla naszych danych przedziały ufności dla parametrów $\beta_0$ i $\beta_1$ na
 
 \section{Predykcja}
 
-Aby dokonać predykcji będizemy chcieli dokonać estyamcji parametru $Y_0-\hat{Y_0}$, gdzie
-$$Y_0 = \beta_0 + \beta_1 x_0 + \epsilon_0  $$
-
-$$\hat{Y_0} = \mu_{Y_0} = \hat{\beta_0} + \hat{\beta_1}x_0  $$
-Dla zmiennej losowej $Y_0-\hat{Y_0}$ wyliczamy jej wartośc oczekiwaną oraz wariancję:
-
-$$ \mathrm{E}(Y_0-\hat{Y_0}) = \beta_0 + \beta_1 x_0 + \epsilon_0- \hat{\beta_0} - \hat{\beta_1}x_0 = 0  $$ 
-
-
-$$ Var(Y_0-\hat{Y_0}) = Var(Y_0)+ Var(\bar{Y_0}) - 2Cov(Y_0,\bar{Y_0}) $$ 
-
-Nasza $2Cov(Y_0,\bar{Y_0}) = 0$, ponieważ $Y_0$ oraz $\bar{Y_0}$ są od siebie niezależne.
-
-$$ Var(Y_0-\hat{Y_0}) = Var(\beta_0 + \beta_1 x_0 + \epsilon_0)+ Var(\bar{Y} +\hat{\beta_1}(\bar{x}_0 -\bar{x}_n)) = \sigma^2 \left( 1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}  \right) $$ 
-
-Dla powyżsych parametrów konstruowane są przedziały ufności. Ich konstrukcja jest analogiczna do tych przedstawionych w \ref{section:ufnosc}.
+|      Naszym celem będzie wyznaczenie przedziału ufności dla pewnego
+$$ Y_0 = \beta_0 + \beta_1 x_0 + \epsilon_0, $$
+gdzie $\epsilon_0 \sim \mathcal{N}(0, \sigma^2)$. W tym celu skorzystamy z tego, że
 $$
- \frac{Y_0 - \hat{Y_0}}{S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}}} \sim t_{n-2}
+ \frac{Y_0 - \hat{Y_0}}{S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}}} \sim t_{n-2},
 $$
+gdzie $\hat{Y_0} = \hat{\beta_0} + \hat{\beta_1} x_0$ jest zmienną losową. Możemy zapisać
+$$
+  \mathrm{P} \left(-t_{1 - \frac{\alpha}{2},n-2} < \frac{Y_0 - \hat{Y_0}}{S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}}} < t_{1 - \frac{\alpha}{2},n-2} \right) = 1 - \alpha,
+$$
+co po przekształceniu prowadzi do
+\begin{multline}
+  \mathrm{P} \left(\hat{Y_0} - t_{1 - \frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} < Y_0 < \hat{Y_0} + t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \right) = 1 - \alpha.
+\end{multline}
 
+Zatem przedział ufności dla $Y_0$ będzie wyglądał następująco:
 $$
-  P \left(\hat{Y_0} - t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \leq Y_0 \leq \hat{Y_0} + t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \right) = 1 - \alpha
+\left[ \hat{Y_0} - t_{1 - \frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \ , \ \hat{Y_0} + t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \ \right].
 $$
+Po podstawieniu danych i przyjęciu poziomu ufności 0.95, otrzymaliśmy przedział, który zmienia się w zależności od czasu edukacji (wykres \ref{fig:predykcja}). W ten sposób możemy na przykład zobaczyć, w jakim przedziale, z prawdopodobieństwem 0.95, będzie mieściła się długość życia, jeśli średni czas nauki będzie wynosił 25 lat.
+
+```{r predykcja, fig.cap="\\label{fig:predykcja} Przedział ufności dla długości życia w zależności od czasu edukacji na poziomie ufności 0.95.", fig.align="center", fig.width = 6, fig.height = 3}
+n <- length(X)
+α <- 0.05
+t <- qt(1 - α/2, n - 2)
+S <- sqrt(sum((Y - a * X - b)^2) / (n - 2))
+
+X0 <- seq(min(X), 25, 0.1)
+Y_ <- a * X0 + b
+
+Yd_n <- Y_ - t * S * sqrt(1 + 1/n + (X0 - mean(X))^2 / sum((X - mean(X))^2))
+Yg_n <- Y_ + t * S * sqrt(1 + 1/n + (X0 - mean(X))^2 / sum((X - mean(X))^2))
+
+ggplot() + 
+  geom_point(aes(X, Y, col='a'), size=0.5) + 
+  geom_line(aes(X0, Yd_n, col='b'), linewidth=0.5) + 
+  geom_line(aes(X0, Yg_n, col='b'), linewidth=0.5) +
+  scale_color_manual(labels=c("Dane", "Przedział ufności"), values=c('#008cff', "#da350b")) +
+  labs(col="") +
+  xlab(TeX("Czas nauki")) +
+  ylab(TeX("Długość życia"))
+```
 
 
 
