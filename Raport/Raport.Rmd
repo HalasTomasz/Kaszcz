@@ -382,3 +382,6 @@ ggplot() +
 
 
 \section{Podsumowanie}
+
+|      Udało nam się wyznaczyć zależność liniową pomiędzy średnia długością życia, a czasem jaki przeciętny obywatel danego państwa poświęca na naukę. Otrzymana przez nas zależność jest dobrze dopasowana, co potwierdza wyliczony współczynnik determinancji równy $0.67$. Przy naszych obliczeniach skorzystaliśmy z klasycznego modelu regresji liniowej. Poruszany przez nasz problem długości życia wydaje się być bardziej złożony, gdyż jest on zależny od bardzo wielu różnych czyników. Dobrym pomysłem na kontynuację pracy byłoby znalezienie modelu regresjji liniowej biorącego pod uwagę inne współczynniki np. poziom opieki medycznej lub wskaźnik GDP danego kraju.
+
