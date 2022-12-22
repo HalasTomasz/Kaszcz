@@ -124,7 +124,7 @@ $$
 Wyestymowane wartości $Y_i$ będą miały postać
 $$ \hat{y_i} = \hat{\beta_1} x_i + \hat{\beta_0}. $$
 
-```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczona dla danych.", fig.align="center", fig.width = 6, fig.height = 3}
+```{r regresja, fig.cap="\\label{fig:regresja} Wykres punktowy wraz z prostą regresji wyznaczoną dla danych.", fig.align="center", fig.width = 6, fig.height = 3}
 ggplot() + 
   geom_point(aes(X, Y, col='a'), size=0.5) + 
   geom_line(aes(X, a*X + b, col='b'), linewidth=0.5) + 
@@ -134,7 +134,7 @@ ggplot() +
   ylab("Długość życia")
 ```
 
-Jak możemy zauważyć wyznaczona prosta pokrywa się z danymi. Współczynnik determinancji, czyli $R^2$ wyniósł 0.67, a więc jest to dość zadowalające dopasowanie.
+Jak możemy zauważyć, wyznaczona prosta pokrywa się z danymi. Współczynnik determinancji, czyli $R^2$ wyniósł 0.67, a więc jest to dość zadowalające dopasowanie.
 
 
 
@@ -182,7 +182,7 @@ ggplot() +
   ylab("Wariancja")
 ```
 
-Na powyższym wykresie zobaczyć możemy, że wariancja częściowa na poczatku ma kilka skoków, jednak wraz ze zwiększającym się $k$ zaczyna gładko zbiegać do wartości wariancji z całej próbki. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona i stała.
+Na powyższym wykresie zobaczyć możemy, że wariancja częściowa na poczatku ma kilka skoków, jednak wraz ze zwiększającym się $k$, zaczyna gładko zbiegać do wartości wariancji z całej próbki. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona.
 
 |      Aby zweryfikować, czy spełnione jest założenie trzecie, skorzystamy z funkcji empirycznej autokorelacji o postaci
 $$ \hat{\rho}(h) = \dfrac{\hat{\gamma}(h)}{\hat{\gamma}(0)}, $$
@@ -295,9 +295,9 @@ $$ \hat{B_0} = \frac{\hat{\beta_0} - \beta_0}{S \sqrt{\frac{1}{n} + \frac{\bar{x
 
 gdzie \( S = \sqrt{\frac{\sum_{i = 1}^n (Y_i - \hat{Y})^2}{n - 2}} \), a $t_{n-2}$ oznacza rozkład t-Studenta z $n-2$ stopniami swobody. Jako pierwszy wyznaczymy przedział ufności dla $\beta_0$. Korzystając z powyższych własności, możemy zapisać
 
-$$ \mathrm{P} \left( -t_{\frac{\alpha}{2},n-2} < \hat{B_0} < t_{1 - \frac{\alpha}{2},n-2}  \right) =  1 - \alpha, $$
+$$ \mathrm{P} \left( t_{\frac{\alpha}{2},n-2} < \hat{B_0} < t_{1 - \frac{\alpha}{2},n-2}  \right) =  1 - \alpha, $$
 
-gdzie $t_{\frac{\alpha}{2},n-2}$ i $t_{1 - \frac{\alpha}{2},n-2}$ są kwantylami odpowiednio rzędu $\frac{\alpha}{2}$ i $1 - \frac{\alpha}{2}$ rozkładu $t_{n-2}$. Ponieważ rozkład t-Studenta jest symetryczny, to $t_{\frac{\alpha}{2},n-2} = -t_{1-\frac{\alpha}{2},n-2}$. Wykorzystując to oraz podstawiając pod statystykę $\hat{B_0}$ jej wzór dostajemy
+gdzie $t_{\frac{\alpha}{2},n-2}$ i $t_{1 - \frac{\alpha}{2},n-2}$ są kwantylami odpowiednio rzędu $\frac{\alpha}{2}$ i $1 - \frac{\alpha}{2}$ rozkładu $t_{n-2}$. Ponieważ rozkład t-Studenta jest symetryczny, to $t_{\frac{\alpha}{2},n-2} = -t_{1-\frac{\alpha}{2},n-2}$. Wykorzystując to oraz podstawiając pod statystykę $\hat{B_0}$ jej wzór, dostajemy
 
 $$ \mathrm{P} \left( -t_{1 - \frac{\alpha}{2},n-2} < \frac{\hat{\beta_0} - \beta_0}{S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}}} < t_{1 - \frac{\alpha}{2},n-2} \right) =  1 - \alpha, $$
 
@@ -383,5 +383,5 @@ ggplot() +
 
 \section{Podsumowanie}
 
-|      Udało nam się wyznaczyć zależność liniową pomiędzy średnia długością życia, a czasem jaki przeciętny obywatel danego państwa poświęca na naukę. Otrzymana przez nas zależność jest dobrze dopasowana, co potwierdza wyliczony współczynnik determinancji równy $0.67$. Przy naszych obliczeniach skorzystaliśmy z klasycznego modelu regresji liniowej. Poruszany przez nasz problem długości życia wydaje się być bardziej złożony, gdyż jest on zależny od bardzo wielu różnych czyników. Dobrym pomysłem na kontynuację pracy byłoby znalezienie modelu regresji liniowej biorącego pod uwagę inne współczynniki np. poziom opieki medycznej lub wskaźnik GDP danego kraju.
+|      Udało nam się wyznaczyć zależność liniową pomiędzy średnia długością życia, a czasem jaki przeciętny obywatel danego państwa poświęca na naukę. Otrzymana przez nas zależność jest dobrze dopasowana, co potwierdza wyliczony współczynnik determinancji równy $0.67$. Przy naszych obliczeniach skorzystaliśmy z klasycznego modelu regresji liniowej. Poruszany w raporcie problem długości życia wydaje się być bardziej złożony, gdyż jest on zależny od bardzo wielu różnych czyników. Dobrym pomysłem na kontynuację pracy byłoby znalezienie modelu regresji biorącego pod uwagę inne współczynniki np. poziom opieki medycznej lub wskaźnik GDP danego kraju.
 
