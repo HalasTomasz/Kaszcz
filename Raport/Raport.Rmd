@@ -134,7 +134,7 @@ ggplot() +
   ylab("Długość życia")
 ```
 
-Jak możemy zauważyć wyznaczona prosta pokrywa się z danymi. Wspołczynnik determinancji, czyli $R^2$ wyniósł 0.67, a więc jest to dość zadowalające dopasowanie.
+Jak możemy zauważyć wyznaczona prosta pokrywa się z danymi. Współczynnik determinancji, czyli $R^2$ wyniósł 0.67, a więc jest to dość zadowalające dopasowanie.
 
 
 
@@ -182,7 +182,7 @@ ggplot() +
   ylab("Wariancja")
 ```
 
-Na powyższym wykresie zobaczyć możemy, że wariancja częściowa wraz ze zwiększającym się $k$ szybko zbiega do wartości wariancji z całej próbki i oscyluje wokół niej. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona i stała.
+Na powyższym wykresie zobaczyć możemy, że wariancja częściowa na poczatku ma kilka skoków, jednak wraz ze zwiększającym się $k$ zaczyna gładko zbiegać do wartości wariancji z całej próbki. Na tej podstawie możemy zakładać, że $\mathrm{Var}(\epsilon_i)$ jest skończona i stała.
 
 |      Aby zweryfikować, czy spełnione jest założenie trzecie, skorzystamy z funkcji empirycznej autokorelacji o postaci
 $$ \hat{\rho}(h) = \dfrac{\hat{\gamma}(h)}{\hat{\gamma}(0)}, $$
@@ -227,7 +227,7 @@ ggplot() +
   ylab(TeX("Gęstość"))
 ```
 
-Kształt histogramu przypomina nieco rozkład normalny. Załóżmy, że w rzeczywistości tak jest. Wtedy nieobciążonym estymatorem wariancji jest
+Kształt histogramu przypomina nieco rozkład normalny. Załóżmy, że w rzeczywistości tak jest i residua pochodzą z rozkładu $\mathcal{N}(0, \sigma^2)$. Wtedy nieobciążonym estymatorem wariancji $\sigma^2$ jest
 $$ S^2 = \frac{1}{n - 2} \sum_{i=1}^n e_i^2 \approx 20.93 \ . $$
 
 ```{r res_gestosc, fig.cap="\\label{fig:res_gestosc} Porównanie histogramu z danych z gęstością teoretyczną rozkładu $\\mathcal{N}(0, S^2)$.", fig.align="center", fig.width = 6, fig.height = 3}
@@ -243,7 +243,7 @@ ggplot() +
   ylab("Gęstość")
 ```
 
-```{r res_dystrybuanta, fig.cap="\\label{fig:res_dystrybuanta} Porównanie dystrybuanty empirycznej z danych z dystrybuantą teoretyczną rozkładu $N(0, S^2)$.", fig.align="center", fig.width = 6, fig.height = 3}
+```{r res_dystrybuanta, fig.cap="\\label{fig:res_dystrybuanta} Porównanie dystrybuanty empirycznej z danych z dystrybuantą teoretyczną rozkładu $\\mathcal{N}(0, S^2)$.", fig.align="center", fig.width = 6, fig.height = 3}
 F <- ecdf(E)
 xs <- seq(min(E), max(E), 0.01)
 ggplot() + 
@@ -255,68 +255,83 @@ ggplot() +
   ylab("Dystrybuanta")
 ```
 
-Na wykresie \ref{fig:res_gestosc} zauważamy, że histogram w miarę pokrywa się z gęstoością teoretyczną. Nie spodziewamy się tutaj bardzo dokładnego pokrywania ze względu na niewielką liczbę danych. Z kolei na wykresie \ref{fig:res_dystrybuanta} widzimy, że dystrybuanta empiryczna wyraźnie nakłada się z dystrybuantą teoretyczną. Aby umocnić nasze przekonania co do normalności residuów, przeprowadzimy test Kołmogorowa-Smirnowa. Przedstawmy hipotezy:
+Na wykresie \ref{fig:res_gestosc} zauważamy, że histogram w miarę pokrywa się z gęstością teoretyczną. Nie spodziewamy się tutaj bardzo dokładnego pokrywania ze względu na niewielką liczbę danych. Z kolei na wykresie \ref{fig:res_dystrybuanta} widzimy, że dystrybuanta empiryczna wyraźnie nakłada się z dystrybuantą teoretyczną. Aby umocnić nasze przekonania co do normalności residuów, przeprowadzimy test Kołmogorowa-Smirnowa. Przedstawmy hipotezy:
 
 \begin{itemize}
 \item $\mathcal{H}_0$: wartości residuów są z rozkładu $\mathcal{N}(0, S^2)$
 \item $\mathcal{H}_1$: wartości residuów nie są z rozkładu $\mathcal{N}(0, S^2)$
 \end{itemize}
 
-Otrzymana p-wartość testu wynosi 0,2532. Ponieważ otrzymany wynik jest wystarczająco duży, to nie mamy podstaw do odrzucenia hipotezy zerowej i możemy przyjąć, że dane pochodzą z rozkładu $\mathcal{N}(0, S^2)$.
+Otrzymana p-wartość testu wynosi 0,2532. Ponieważ otrzymany wynik jest wystarczająco duży, to nie mamy podstaw do odrzucenia hipotezy zerowej i możemy przyjąć, że dane pochodzą z rozkładu $\mathcal{N}(0, \sigma^2 = S^2)$.
 
 
 
 
 
-\section{Przedziały ufności dla $\beta_1$ i $\beta0$} \label{section:ufnosc}
+\section{Przedziały ufności dla $\beta_1$ i $\beta_0$} \label{section:ufnosc}
 
-|      W celu kostrukcji przedziałów ufności posłużymy się estymatorami $\hat{\beta_0}$ $\hat{\beta_1}$ i ich własnościami:
-$$\mathrm{E}\left[\hat{\beta_0} \right] = \hat{\beta_0} \quad \text{oraz} \quad \mathrm{E}\left[\hat{\beta_1} \right] = \hat{\beta_1}$$ 
-$$Var(\hat{\beta_0}) = \sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right)$$
+|      Aby skonstruować przedziały ufności dla szukanych parametrów, posłużymy się estymatorami $\hat{\beta_0}$, $\hat{\beta_1}$, ale tym razem pod postacią zmiennych losowych:
 
-$$Var(\hat{\beta_1}) = \frac{\sigma^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}$$
-oraz wiemy, że 
-
-$$ \epsilon_i  \sim \mathcal{N}(0,\,\sigma^{2})\,. $$
-
-$$ \hat{\beta_0} \sim \mathcal{N} \left(\hat{\beta_0},\,\sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right) \right)\,. $$
-
-$$ \hat{\beta_1} \sim \mathcal{N} \left(\hat{\beta_1},\,\frac{\sigma^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right) \,. $$
-Na podstawie powyższych informacji tworzymy przedziały ufności dla estymatorów $\hat{\beta_0}$ $\hat{\beta_1}$. Należy przy tym pamiętać, że dla nieznanego parametru $\sigma$, nasze estymatory mają własność:
+$$ 
+\begin{cases}
+    \hat{\beta_1} = \dfrac{\sum_{i = 1}^n(x_i - \bar{x})(Y_i - \bar{Y})}{\sum_{i = 1}^n(x_i - \bar{x})^2}\\
+    \hat{\beta_0} = \bar{Y} - \hat{\beta_1} \bar{x}
+\end{cases}.
 $$
-  \frac{\hat{\beta_0} - \beta_0}{S \sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}
-$$
-oraz
+
+Zakładając, że $\epsilon_i \sim \mathcal{N}(0,\,\sigma^{2})$ można pokazać, że
 
 $$
-  \frac{\hat{\beta_1} - \beta_1}{S \sqrt{\frac{1}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}
+\begin{cases}
+\hat{\beta_1} \sim \mathcal{N} \left(\beta_1,\ \ \frac{\sigma^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right) \\
+\hat{\beta_0} \sim \mathcal{N} \left(\beta_0,\ \ \sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2} \right) \right)
+\end{cases}.
 $$
-gdzie $S$ wynosi:
-$$ S^2 = \frac{\sum_{i=1}^n (Y_i - \hat{Y} )^2}{n-2} $$
-Korzystając z powyższych własności tworzymy przedziały ufności:
 
-$$ P \left( -t_{\frac{\alpha}{2},n-2} < \hat{\beta_0} < t_{1 - \frac{\alpha}{2},n-2}  \right) =  1 - \alpha$$
-rozkład $t$-studenta jest rozkładem symetrycznym, dlatego $t_{\frac{\alpha}{2},n-2} = t_{1-\frac{\alpha}{2},n-2}$. Następnie
+Ponieważ nie znamy wartości $\sigma^2$, będziemy musieli wykorzystać estymator $S^2$. Konstruujemy statystyki $\hat{B_1}$ i $\hat{B_0}$ w następujący sposób:
 
-$$ P \left( -t_{\frac{\alpha}{2},n-2} < \frac{\hat{\beta_0} - \beta_0}{S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}}} < t_{\frac{\alpha}{2},n-2} \right) =  1 - \alpha$$
-$$ P \left( \hat{\beta_0} -t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_0 < \hat{\beta_0} + t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \alpha$$
-Otrzymaliśmy przedział ufności dla parametru $\beta_0$, gdzie $t_{\frac{\alpha}{2},n-2}$ jest kwantylem pochodzącym z rozkładu $t$-studenta z $n-2$ stopniami swobody. Analogicznie wyliczamy przedział ufności dla parametru $\beta_1$. Wygląda on następująco:
+$$ \hat{B_1} = \frac{\hat{\beta_1} - \beta_1}{S \sqrt{\frac{1}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}, $$
+$$ \hat{B_0} = \frac{\hat{\beta_0} - \beta_0}{S \sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n \left( x_i - \bar{x} \right)^2}}} \sim t_{n-2}, $$
 
-$$ P \left( \hat{\beta_1} -t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_1 < \hat{\beta_1} + t_{\frac{\alpha}{2},n-2}S\sqrt{ \frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} \right) =  1 - \alpha$$
+gdzie \( S^2 = \frac{\sum_{i = 1}^n (Y_i - \hat{Y})^2}{n - 2} \), a $t_{n-2}$ oznacza rozkład t-Studenta z $n-2$ stopniami swobody. Jako pierwszy wyznaczymy przedział ufności dla $\beta_0$. Korzystając z powyższych własności, możemy zapisać
 
-Dla naszych dane przedziału ufnosci dla parametru $B_0$ wynoszą [41.707, 44,096] oraz dla $B_1$ [1.818, 2.64]
+$$ \mathrm{P} \left( -t_{\frac{\alpha}{2},n-2} < \hat{B_0} < t_{1 - \frac{\alpha}{2},n-2}  \right) =  1 - \alpha, $$
+
+gdzie $t_{\frac{\alpha}{2},n-2}$ i $t_{1 - \frac{\alpha}{2},n-2}$ są kwantylami odpowiednio rzędu $\frac{\alpha}{2}$ i $1 - \frac{\alpha}{2}$ rozkładu $t_{n-2}$. Ponieważ rozkład t-Studenta jest symetryczny, to $t_{\frac{\alpha}{2},n-2} = -t_{1-\frac{\alpha}{2},n-2}$. Wykorzystując to oraz podstawiając pod statystykę $\hat{B_0}$ jej wzór dostajemy
+
+$$ \mathrm{P} \left( -t_{1 - \frac{\alpha}{2},n-2} < \frac{\hat{\beta_0} - \beta_0}{S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}}} < t_{1 - \frac{\alpha}{2},n-2} \right) =  1 - \alpha, $$
+
+co po przekształceniu daje
+
+$$ \mathrm{P} \left( \hat{\beta_0} -t_{1 - \frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} < \beta_0 < \hat{\beta_0} + t_{1 - \frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \ \right) =  1 - \alpha $$
+
+Zatem przedział ufności dla parametru $\beta_0$ na poziomie ufności $1 - \alpha$ ma postać
+
+$$ \left[ \hat{\beta_0} -t_{1 - \frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \ , \ \ \hat{\beta_0} + t_{1 - \frac{\alpha}{2},n-2}S\sqrt{\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}} \ \right]. $$
+
+Analogicznie wyznaczamy przedział ufności dla parametru $\beta_1$. Wygląda on następująco:
+
+$$ \left[ \hat{\beta_1} -t_{\frac{\alpha}{2},n-2}S\sqrt{\frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} \ , \ \ \hat{\beta_1} + t_{\frac{\alpha}{2},n-2}S\sqrt{ \frac{1}{\sum_{i=1}^n (x_i - \bar{x})^2}} \ \right]. $$
+
+Dla naszych danych przedziały ufności dla parametrów $\beta_0$ i $\beta_1$ na poziomie ufności 0.95 wynoszą odpowiednio \mbox{[37.45, \ 48.35]} oraz [1.82, \ 2.64].
+
 
 ```{r przedział ufności}
-  n = length(Y)
+  n = length(X)
   S = sqrt(sum((Y - mean(Y))^2)/(n-2)) 
+  alpha = 0.05
   varb0 = S * sqrt(1/n + mean(X)^2/sum((X-mean(X))^2))
-  bLeft = b - qt(.975, df=n-2)*varb0
-  bRight = b + qt(.975, df=n-2)*varb0
+  bLeft = b - qt(1-alpha, df=n-2)*varb0
+  bRight = b + qt(1-alpha, df=n-2)*varb0
   
   varb1 = S * sqrt(1/sum((X-mean(X))^2))
-  aLeft = a - qt(.975, df=n-2)*varb1
-  aRight = a + qt(.975, df=n-2)*varb1
+  aLeft = a - qt(1-alpha, df=n-2)*varb1
+  aRight = a + qt(1-alpha, df=n-2)*varb1
 ```
+
+
+
+
 
 \section{Predykcja}
 
