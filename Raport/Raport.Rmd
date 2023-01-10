@@ -346,9 +346,9 @@ $$
   \mathrm{P} \left(-t_{1 - \frac{\alpha}{2},n-2} < \frac{Y_0 - \hat{Y_0}}{S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}}} < t_{1 - \frac{\alpha}{2},n-2} \right) = 1 - \alpha,
 $$
 co po przekształceniu prowadzi do
-\begin{multline}
+$$
   \mathrm{P} \left(\hat{Y_0} - t_{1 - \frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} < Y_0 < \hat{Y_0} + t_{\frac{\alpha}{2},n-2} S \sqrt{1 + \frac{1}{n} + \frac{(x_0 - x_n)^2}{\sum_{i=1}^n(x_i - \bar{x}_n)^2}} \right) = 1 - \alpha.
-\end{multline}
+$$
 
 Zatem przedział ufności dla $Y_0$ będzie wyglądał następująco:
 $$
